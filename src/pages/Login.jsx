@@ -1,25 +1,79 @@
-import React from 'react';
+import { useState } from 'react';
 import { Button, Form, Input } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useNavigate } from "react-router-dom";
-
+import { UserOutlined, LockOutlined, CloseOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
-  const onFinish = (values) => {
-    console.log('Received values:', values);
+  const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [form] = Form.useForm();
+  const navigate = useNavigate();
+
+  const onFinish = async (values) => {
+    setLoading(true);
+    setLoginError('');
+    
+    try {
+      const response = await fetch('https://api-genderhealthcare.purintech.id.vn/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          username: values.username,
+          password: values.password,
+        }),
+      });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      if (response.ok && data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username || values.username);
+        toast.success('Đăng nhập thành công!');
+        navigate('/user');
+      } else {
+        const errorMsg = data.message || 'Sai tên đăng nhập hoặc mật khẩu!';
+        setLoginError(errorMsg);
+        toast.error(errorMsg);
+      }
+    } catch (error) {
+      const errorMsg = 'Lỗi kết nối. Vui lòng thử lại.';
+      setLoginError(errorMsg);
+      toast.error(errorMsg);
+    } finally {
+      setLoading(false);
+    }
   };
- const navigate = useNavigate();
+
+
   return (
     <div className='flex h-screen w-screen overflow-hidden'>
+      {/* Close button */}
+      <button
+        onClick={() => navigate('/')}
+        className='absolute top-4 right-4 z-50 p-2 rounded-full hover:bg-gray-100 transition-colors'
+      >
+        <CloseOutlined className='text-2xl text-gray-600' />
+      </button>
+
       {/* Left side - Image */}
       <div className='hidden md:block w-1/2 h-full relative bg-gray-100'>
-        <img 
-          src="/src/assets/images/side.png" 
-          alt="Healthcare Illustration" 
-          className='absolute top-0 left-0 w-full h-full object-cover ' 
+        <img
+          src="/src/assets/images/side.png"
+          alt="Healthcare Illustration"
+          className='absolute top-0 left-0 w-full h-full object-cover'
         />
       </div>
-      
+
       {/* Right side - Form */}
       <div className='w-full md:w-1/2 h-full flex justify-center items-center bg-white p-6 overflow-y-auto'>
         <div className='w-full max-w-md'>
@@ -29,6 +83,7 @@ const Login = () => {
           </div>
 
           <Form
+            form={form}
             name="login_form"
             layout="vertical"
             onFinish={onFinish}
@@ -37,9 +92,9 @@ const Login = () => {
               name="username"
               rules={[{ required: true, message: 'Please input your username!' }]}
             >
-              <Input 
-                prefix={<UserOutlined className="text-gray-400" />} 
-                placeholder="Username or Email" 
+              <Input
+                prefix={<UserOutlined className="text-gray-400" />}
+                placeholder="Username"
                 size="large"
               />
             </Form.Item>
@@ -58,7 +113,7 @@ const Login = () => {
             <div className="flex justify-between items-center mb-6">
               <Form.Item name="remember" valuePropName="checked" className="mb-0">
                 <div className="flex items-center">
-                  <input type="checkbox" className="mr-2 rounded text-blue-500 focus:ring-blue-400"/>
+                  <input type="checkbox" className="mr-2 rounded text-blue-500 focus:ring-blue-400" />
                   <span className="text-gray-600">Remember me</span>
                 </div>
               </Form.Item>
@@ -66,19 +121,26 @@ const Login = () => {
             </div>
 
             <Form.Item>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
+              <Button
+                type="primary"
+                htmlType="submit"
                 className="w-full h-12 text-lg bg-blue-500 hover:bg-blue-600 border-none"
+                loading={loading}
               >
                 Sign In
               </Button>
             </Form.Item>
 
+            {loginError && (
+              <div style={{ color: 'red', textAlign: 'center', marginTop: 8 }}>
+                {loginError}
+              </div>
+            )}
+
             <div className="text-center mt-6">
               <p className="text-gray-600">
                 Don't have an account?{' '}
-                <a  onClick={() => navigate("/register")}  className="text-blue-500 font-medium hover:underline">
+                <a onClick={() => navigate("/register")} className="text-blue-500 font-medium hover:underline cursor-pointer">
                   Sign up
                 </a>
               </p>

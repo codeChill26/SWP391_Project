@@ -5,40 +5,105 @@ const services = [
   {
     title: "Mua thuốc trực tuyến",
     desc: "Đặt thuốc theo toa, Nhận thuốc trong 2h.",
-    img: "/src/assets/images/service-medicine.jpg",
+    img: "/src/assets/images/service1.jpg",
     button: "Mua thuốc ngay",
     bg: "bg-[#6EC1E4]",
   },
   {
     title: "Phòng tư vấn trực tuyến",
     desc: "Nhận tư vấn sức khỏe mọi lúc mọi nơi từ Bác sĩ chuyên môn.",
-    img: "/src/assets/images/service-doctor.jpg",
+    img: "/src/assets/images/service2.jpg",
     button: "Đặt tư vấn",
     bg: "bg-[#8ED6FB]",
   },
   {
     title: "Xét nghiệm tại nhà",
     desc: "Không cần chờ đợi, điều dưỡng sẽ lấy mẫu tận nơi.",
-    img: "/src/assets/images/service-lab.jpg",
+    img: "/src/assets/images/service3.jpg",
     button: "Đăng ký",
     bg: "bg-[#5ED6C1]",
   },
   {
     title: "Bảo hiểm sức khỏe",
     desc: "Chăm sóc toàn diện cho bạn và người thân.",
-    img: "/src/assets/images/service-insurance.jpg",
+    img: "/src/assets/images/service4.jpg",
     button: "Đăng ký",
     bg: "bg-[#7ED957]",
   },
+  {
+    title: "Tư vấn sức khỏe",
+    desc: "Tư vấn riêng tư, bảo mật về các vấn đề giới tính, tình dục an toàn.",
+    img: "/src/assets/images/service5.jpg",
+    button: "Tư vấn ngay",
+    bg: "bg-[#3B9AB8]",
+  },
+  {
+    title: "Hỗ trợ PrEP/PEP",
+    desc: "Hỗ trợ sử dụng thuốc dự phòng trước và sau phơi nhiễm HIV.",
+    img: "/src/assets/images/service6.jpg",
+    button: "Tìm hiểu",
+    bg: "bg-[#3382a0]",
+  },
+  {
+    title: "Khám sức khỏe tổng quát",
+    desc: "Kiểm tra sức khỏe định kỳ, phát hiện sớm bệnh lý.",
+    img: "/src/assets/images/service7.jpg",
+    button: "Đặt lịch",
+    bg: "bg-[#B2E0F7]",
+  },
+  {
+    title: "Tiêm chủng mở rộng",
+    desc: "Đăng ký tiêm chủng cho trẻ em và người lớn.",
+    img: "/src/assets/images/service8.jpg",
+    button: "Đăng ký",
+    bg: "bg-[#F7D774]",
+  },
+  {
+    title: "Tư vấn tâm lý",
+    desc: "Chuyên gia tâm lý hỗ trợ bạn vượt qua khó khăn.",
+    img: "/src/assets/images/service9.jpg",
+    button: "Đặt tư vấn",
+    bg: "bg-[#F7B2B7]",
+  },
+  {
+    title: "Xét nghiêm ung thư",
+    desc: "Dịch vụ chăm sóc sức khỏe tại nhà cho người cao tuổi.",
+    img: "/src/assets/images/service10.jpg",
+    button: "Tìm hiểu",
+    bg: "bg-[#B2F7C1]",
+  },
 ];
 
-const CARD_WIDTH = 340; // px (bao gồm cả gap)
-const GAP = 24; // px
+const CARD_WIDTH = 320;
+const GAP = 24;
 
 const ServiceSection = () => {
+  // Responsive: 1 card on mobile, 2 on tablet, 3 on desktop
+  const getVisibleCards = () => {
+    if (window.innerWidth < 640) return 1;
+    if (window.innerWidth < 1024) return 2;
+    return 3;
+  };
+
+  const [visibleCards, setVisibleCards] = useState(getVisibleCards());
   const [index, setIndex] = useState(0);
-  const maxIndex = services.length - 1;
   const intervalRef = useRef();
+
+  const maxIndex = services.length - visibleCards;
+
+  // Responsive update
+  useEffect(() => {
+    const handleResize = () => {
+      const newVisible = getVisibleCards();
+      setVisibleCards(newVisible);
+      if (index > services.length - newVisible) {
+        setIndex(Math.max(0, services.length - newVisible));
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+    // eslint-disable-next-line
+  }, [index]);
 
   // Auto slide
   useEffect(() => {
@@ -67,17 +132,17 @@ const ServiceSection = () => {
   return (
     <section className="mb-16">
       <h2 className="text-2xl font-bold text-[#3B9AB8] mb-6 text-center">Dịch vụ nổi bật</h2>
-      <div className="relative max-w-5xl mx-auto px-2">
+      <div className="relative max-w-6xl mx-auto flex items-center">
         {/* Arrow left */}
         <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow transition"
+          className="hidden sm:flex absolute left-[-56px] top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow transition"
           onClick={handlePrev}
           aria-label="Trước"
         >
-          <FaChevronLeft size={24} className="text-[#3B9AB8]" />
+          <FaChevronLeft size={28} className="text-[#3B9AB8]" />
         </button>
         {/* Cards */}
-        <div className="overflow-hidden">
+        <div className="overflow-hidden w-full">
           <div
             className="flex transition-transform duration-500"
             style={{
@@ -111,11 +176,11 @@ const ServiceSection = () => {
         </div>
         {/* Arrow right */}
         <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow transition"
+          className="hidden sm:flex absolute right-[-56px] top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow transition"
           onClick={handleNext}
           aria-label="Sau"
         >
-          <FaChevronRight size={24} className="text-[#3B9AB8]" />
+          <FaChevronRight size={28} className="text-[#3B9AB8]" />
         </button>
       </div>
     </section>

@@ -1,17 +1,59 @@
-import React from 'react';
-import { Button, Form, Input, DatePicker } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Button, Form, Input, message } from 'antd';
+import { UserOutlined, LockOutlined, MailOutlined, CloseOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const onFinish = (values) => {
-    console.log('Received values:', values);
-  };
-  
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const onFinish = async (values) => {
+    try {
+      setLoading(true);
+      console.log('Attempting registration with:', values);
+      
+      const response = await fetch('http://api-genderhealthcare.purintech.id.vn/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          fullName: values.fullName,
+          email: values.email,
+          password: values.password
+        })
+      });
+
+      console.log('Response status:', response.status);
+      const data = await response.json();
+      console.log('Response data:', data);
+
+      if (response.ok) {
+        message.success('Registration successful! Please login.');
+        navigate('/login');
+      } else {
+        message.error(data.message || 'Registration failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      message.error('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className='flex h-screen w-screen overflow-hidden'>
+      {/* Close button */}
+      <button
+        onClick={() => navigate('/')}
+        className='absolute top-4 right-4 z-50 p-2 rounded-full hover:bg-gray-100 transition-colors'
+      >
+        <CloseOutlined className='text-2xl text-gray-600' />
+      </button>
+
       {/* Left side - Image */}
       <div className='hidden md:block w-1/2 h-full relative bg-gray-100'>
         <img 
@@ -100,6 +142,7 @@ const Register = () => {
                 type="primary" 
                 htmlType="submit" 
                 className="w-full h-12 text-lg bg-blue-500 hover:bg-blue-600 border-none"
+                loading={loading}
               >
                 Register
               </Button>
