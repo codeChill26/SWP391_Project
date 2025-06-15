@@ -85,7 +85,7 @@ const ServiceSection = () => {
               gap: `${GAP}px`,
               minWidth: `${CARD_WIDTH * services.length + GAP * (services.length - 1)}px`,
             }}
-          >
+          >5
             {services.map((service, idx) => (
               <div
                 key={idx}
