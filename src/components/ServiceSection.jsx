@@ -1,32 +1,32 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const services = [
   {
     title: "Mua thuốc trực tuyến",
     desc: "Đặt thuốc theo toa, Nhận thuốc trong 2h.",
-    img: "/src/assets/images/service1.jpg",
+    img: "/src/assets/images/service-purchases.png",
     button: "Mua thuốc ngay",
     bg: "bg-[#6EC1E4]",
   },
   {
     title: "Phòng tư vấn trực tuyến",
     desc: "Nhận tư vấn sức khỏe mọi lúc mọi nơi từ Bác sĩ chuyên môn.",
-    img: "/src/assets/images/service2.jpg",
+    img: "/src/assets/images/service-doctor.png",
     button: "Đặt tư vấn",
     bg: "bg-[#8ED6FB]",
   },
   {
     title: "Xét nghiệm tại nhà",
     desc: "Không cần chờ đợi, điều dưỡng sẽ lấy mẫu tận nơi.",
-    img: "/src/assets/images/service3.jpg",
+    img: "/src/assets/images/service-lab.png",
     button: "Đăng ký",
     bg: "bg-[#5ED6C1]",
   },
   {
     title: "Bảo hiểm sức khỏe",
     desc: "Chăm sóc toàn diện cho bạn và người thân.",
-    img: "/src/assets/images/service4.jpg",
+    img: "/src/assets/images/service-insurance.png",
     button: "Đăng ký",
     bg: "bg-[#7ED957]",
   },
@@ -155,21 +155,22 @@ const ServiceSection = () => {
               <div
                 key={idx}
                 className={`rounded-xl shadow-lg flex flex-col justify-between p-6 min-w-[320px] max-w-[320px] ${service.bg} text-white relative`}
-                style={{ height: 200 }}
+                style={{ height: 280 }}
               >
-                <div>
+                <div className="flex-1">
                   <h3 className="font-bold text-xl mb-2">{service.title}</h3>
                   <p className="mb-4">{service.desc}</p>
                 </div>
-                <button className="bg-white text-[#3B9AB8] font-semibold px-4 py-2 rounded-lg shadow hover:bg-blue-50 transition">
-                  {service.button}
-                </button>
-                <img
-                  src={service.img}
-                  alt={service.title}
-                  className="absolute right-4 bottom-4 w-20 h-20 object-contain rounded-lg shadow"
-                  style={{ background: "rgba(255,255,255,0.15)" }}
-                />
+                <div className="flex items-end justify-between">
+                  <button className="bg-white text-[#3B9AB8] font-semibold px-4 py-2 rounded-lg shadow hover:bg-blue-50 transition">
+                    {service.button}
+                  </button>
+                  <img
+                    src={service.img}
+                    alt={service.title}
+                    className="w-24 h-24 object-contain"
+                  />
+                </div>
               </div>
             ))}
           </div>

@@ -1,10 +1,11 @@
 import React from 'react'
+import { UserLayout } from '../layout/userLayout'
 
 const Booking = () => {
   return (
-    <div>
+    <UserLayout>
       
-    </div>
+    </UserLayout>
   )
 }
 

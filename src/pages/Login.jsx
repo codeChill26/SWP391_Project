@@ -3,6 +3,7 @@ import { Button, Form, Input } from 'antd';
 import { UserOutlined, LockOutlined, CloseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
@@ -16,37 +17,28 @@ const Login = () => {
     setLoginError('');
     
     try {
-      const response = await fetch('https://api-genderhealthcare.purintech.id.vn/api/auth/login', {
-        method: 'POST',
+      const response = await axios.post('https://api-genderhealthcare.purintech.id.vn/api/auth/login', {
+        username: values.username,
+        password: values.password,
+      }, {
         headers: {
           'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          username: values.username,
-          password: values.password,
-        }),
+          'Accept': 'application/json',
+        }
       });
 
-      let data;
-      try {
-        data = await response.json();
-      } catch {
-        data = {};
-      }
-
-      if (response.ok && data.token) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('username', data.username || values.username);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('username', response.data.username || values.username);
         toast.success('Đăng nhập thành công!');
         navigate('/user');
       } else {
-        const errorMsg = data.message || 'Sai tên đăng nhập hoặc mật khẩu!';
+        const errorMsg = response.data.message || 'Sai tên đăng nhập hoặc mật khẩu!';
         setLoginError(errorMsg);
         toast.error(errorMsg);
       }
     } catch (error) {
-      const errorMsg = 'Lỗi kết nối. Vui lòng thử lại.';
+      const errorMsg = error.response?.data?.message || 'Lỗi kết nối. Vui lòng thử lại.';
       setLoginError(errorMsg);
       toast.error(errorMsg);
     } finally {
