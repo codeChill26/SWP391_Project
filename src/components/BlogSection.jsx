@@ -4,17 +4,17 @@ import { useNavigate } from "react-router-dom";
 const blogs = [
   {
     title: "Những điều cần biết về sức khỏe giới tính",
-    img: "/src/assets/images/blog-gioitinh-1.jpg",
+    img: "/src/assets/images/blog_genderhealth.png",
     desc: "Tìm hiểu các kiến thức cơ bản về sức khỏe giới tính, phòng tránh các bệnh lây truyền qua đường tình dục.",
   },
   {
     title: "Tầm quan trọng của xét nghiệm định kỳ",
-    img: "/src/assets/images/blog-gioitinh-2.jpg",
+    img: "/src/assets/images/blog_checkup.png",
     desc: "Xét nghiệm định kỳ giúp phát hiện sớm các bệnh lý, bảo vệ sức khỏe bản thân và cộng đồng.",
   },
   {
     title: "PrEP & PEP: Dự phòng HIV hiệu quả",
-    img: "/src/assets/images/blog-gioitinh-3.jpg",
+    img: "/src/assets/images/blog_PrEp.png",
     desc: "Giải đáp về thuốc PrEP, PEP và cách sử dụng an toàn để phòng tránh lây nhiễm HIV.",
   },
 ];

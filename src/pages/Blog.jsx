@@ -8,28 +8,28 @@ const blogData = [
     author: 'Hoàng Thị Lành',
     experience: 9,
     rating: 4.8,
-    image: 'https://example.com/image1.jpg',
+    image: 'src/assets/images/Blog_STD.png',
   },
   {
     title: 'Bệnh giang mai và những điều cần biết',
     author: 'Hoàng Thị Lành',
     experience: 9,
     rating: 4.8,
-    image: 'https://example.com/image2.jpg',
+    image: 'src/assets/images/Blog_Syphilis.png',
   },
   {
     title: 'Tháng nhận thức HIV',
     author: 'Nguyễn Thanh Bình',
     experience: 10,
     rating: 4.9,
-    image: 'https://example.com/image3.jpg',
+    image: 'src/assets/images/Blog_HIV.png',
   },
   {
     title: 'Chu trì kinh nguyệt và các thông tin quan trọng',
     author: 'Nguyễn Thanh Bình',
     experience: 10,
     rating: 4.9,
-    image: 'https://example.com/image4.jpg',
+    image: 'src/assets/images/Blog_Menstrual.png',
   },
 ];
 const Blog = () => {
