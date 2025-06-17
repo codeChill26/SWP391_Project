@@ -31,7 +31,7 @@ const Login = () => {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('username', response.data.username || values.username);
         toast.success('Đăng nhập thành công!');
-        navigate('/user');
+        navigate('/profile');
       } else {
         const errorMsg = response.data.message || 'Sai tên đăng nhập hoặc mật khẩu!';
         setLoginError(errorMsg);

@@ -11,6 +11,7 @@ import Calendar from "./pages/Calendar"
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Service from "./pages/Service";
+import Booking from "./pages/Booking";
 
 function App() {
   return (
@@ -22,9 +23,10 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/service" element={<Service />} />
+        <Route path="/services" element={<Service />} />
         <Route path="/about" element={<About />}/>
         <Route path="/blog" element={<Blog/>}/>
+        <Route path="/booking" element={<Booking/>}/>
       </Routes>
       <ToastContainer />
     </Router>
