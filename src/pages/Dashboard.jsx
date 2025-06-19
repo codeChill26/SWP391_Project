@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSearch, FaMapMarkerAlt, FaCalendarAlt, FaChevronLeft, FaChevronRight, FaChevronUp, FaClock, FaDollarSign } from "react-icons/fa";
 import MainLayout from "../layout/MainLayout";
+import { useUser } from "../context/UserContext";
+import { Calendar } from 'antd';
 
 const services = [
   {
@@ -34,27 +36,20 @@ const services = [
 ];
 
 const Dashboard = () => {
-  const [displayName, setDisplayName] = useState("Guest"); // Default to Guest or fetch from context
   const navigate = useNavigate();
+  const { userData } = useUser();
 
   // Dummy data for upcoming appointments (June 2023)
   const daysInMonth = Array.from({ length: 30 }, (_, i) => i + 1);
   const currentMonth = "June 2023";
   const appointments = [14, 22, 29]; // Example days with appointments
 
-  useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
-      setDisplayName(storedUsername);
-    }
-  }, []);
-
   return (
-    <MainLayout activeMenu="dashboard" displayName={displayName}>
+    <MainLayout activeMenu="dashboard" displayName={userData.name || 'User'}>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-8">
-          <h1 className="text-gray-500 text-lg">Hi, {displayName}</h1>
+          <h1 className="text-gray-500 text-lg">Hi, {userData.name || 'User'}</h1>
           <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
         </div>
 
@@ -101,37 +96,8 @@ const Dashboard = () => {
                 View All <FaChevronRight className="ml-1 text-xs" />
               </button>
             </div>
-
-            {/* Calendar */}
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-4">
-                <button className="text-gray-500"><FaChevronLeft /></button>
-                <span className="font-semibold text-gray-800">{currentMonth}</span>
-                <button className="text-gray-500"><FaChevronRight /></button>
-              </div>
-              <div className="grid grid-cols-7 gap-2 text-center text-sm font-medium text-gray-500 mb-2">
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
-                <span>Sat</span>
-                <span>Sun</span>
-              </div>
-              <div className="grid grid-cols-7 gap-2 text-center text-sm">
-                {/* Placeholder for empty leading days */}
-                {Array.from({ length: 3 }, (_, i) => <span key={`empty-${i}`}></span>)}
-                {daysInMonth.map(day => (
-                  <span 
-                    key={day}
-                    className={`p-2 rounded-full cursor-pointer ${appointments.includes(day) ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}`}
-                  >
-                    {day}
-                  </span>
-                ))}
-              </div>
-            </div>
-
+            {/* Calendar UI */}
+            <Calendar fullscreen={false} />
             <div className="text-center text-gray-500 mt-8">
               <FaCalendarAlt className="text-4xl mx-auto mb-2 text-gray-300" />
               <p>No upcoming appointments</p>

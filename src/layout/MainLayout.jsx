@@ -6,26 +6,29 @@ import {
   AiOutlineTool,
   AiOutlineQuestionCircle,
   AiOutlineLogout,
+  AiOutlineHome,
 } from "react-icons/ai";
 import { FaUserCircle, FaBell, FaChevronDown, FaSyringe } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 const sidebarMenu = [
+  { label: "Home", icon: <AiOutlineHome size={22} />, key: "" },
   { label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "dashboard" },
   { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "calendar" },
   { label: "Profile", icon: <AiOutlineUser size={22} />, key: "profile" },
-  { label: "Service", icon: <FaSyringe size={22} />, key: "service" },
+  { label: "Services", icon: <FaSyringe size={22} />, key: "services" },  
   { label: "Help", icon: <AiOutlineQuestionCircle size={22} />, key: "help" },
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];
 
 const MainLayout = ({ children, activeMenu, displayName }) => {
   const navigate = useNavigate();
+  const { logout, userData } = useUser();
 
   const handleMenuClick = (key) => {
     if (key === 'logout') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
+      logout();
       navigate('/');
     } else {
       navigate(`/${key}`);
@@ -69,7 +72,7 @@ const MainLayout = ({ children, activeMenu, displayName }) => {
         <div className="p-8 pb-0">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <div className="text-gray-500 text-lg">Hi, {displayName || 'User'}</div>
+              <div className="text-gray-500 text-lg">Hi, {displayName || userData.name || 'User'}</div>
               <div className="text-2xl font-bold capitalize">{activeMenu}</div>
             </div>
             <div className="flex items-center gap-4">
@@ -77,7 +80,7 @@ const MainLayout = ({ children, activeMenu, displayName }) => {
               <FaBell className="text-gray-400 text-xl" />
               <div className="flex items-center gap-2">
                 <FaUserCircle className="text-2xl text-gray-400" />
-                <span className="font-semibold">{displayName || 'User'}</span>
+                <span className="font-semibold">{displayName || userData.name || 'User'}</span>
               </div>
             </div>
           </div>

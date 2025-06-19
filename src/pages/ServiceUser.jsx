@@ -1,8 +1,8 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import MainLayout from '../layout/MainLayout';
+import { useUser } from '../context/UserContext';
 
 const allServices = [
   {
@@ -87,72 +87,69 @@ const allServices = [
   }
 ];
 
-const Service = () => {
+const ServiceUser = () => {
   const navigate = useNavigate();
+  const { userData } = useUser();
 
   const handleBooking = (serviceId) => {
     navigate(`/calendar?service=${serviceId}`);
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <div className="flex-grow">
-        {/* Hero Section */}
-        <div className="bg-[#3B9AB8] text-white py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold mb-4">Our Services</h1>
-              <p className="text-xl max-w-3xl mx-auto">
-                Comprehensive gender healthcare services designed to support your journey with expert care and understanding.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Services Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allServices.map(service => (
-              <div
-                key={service.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-              >
-                <div className="p-6">
-                  <div className="text-4xl mb-4">{service.icon}</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    {service.description}
-                  </p>
-                  <div className="border-t border-gray-200 pt-4 mt-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-lg font-semibold text-[#3B9AB8]">{service.price}</p>
-                        <p className="text-sm text-gray-500">{service.duration}</p>
-                      </div>
-                      <Button
-                        type="primary"
-                        onClick={() => handleBooking(service.id)}
-                        style={{
-                          backgroundColor: '#3B9AB8',
-                          borderColor: '#3B9AB8',
-                        }}
-                      >
-                        Booking
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+    <MainLayout activeMenu="services" displayName={userData.name || 'User'}>
+      {/* Hero Section */}
+      <div className="bg-[#3B9AB8] text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">Our Services</h1>
+            <p className="text-xl max-w-3xl mx-auto">
+              Comprehensive gender healthcare services designed to support your journey with expert care and understanding.
+            </p>
           </div>
         </div>
       </div>
-      <Footer />
-    </div>
+
+      {/* Services Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {allServices.map(service => (
+            <div
+              key={service.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+            >
+              <div className="p-6">
+                <div className="text-4xl mb-4">{service.icon}</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {service.title}
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  {service.description}
+                </p>
+                <div className="border-t border-gray-200 pt-4 mt-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-lg font-semibold text-[#3B9AB8]">{service.price}</p>
+                      <p className="text-sm text-gray-500">{service.duration}</p>
+                    </div>
+                    <Button
+                      type="primary"
+                      onClick={() => handleBooking(service.id)}
+                      style={{
+                        backgroundColor: '#3B9AB8',
+                        borderColor: '#3B9AB8',
+                      }}
+                    >
+                      Booking
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </MainLayout>
   );
 };
 
-export default Service; 
+export default ServiceUser; 
