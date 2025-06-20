@@ -1,12 +1,12 @@
 import React from 'react'
-import MainLayout from '../layout/MainLayout'
+import { UserLayout } from '../layout/userLayout'
 
 
 const Booking = () => {
   return (
-    <MainLayout>
+    <UserLayout>
       
-    </MainLayout>
+    </UserLayout>
   )
 }
 
