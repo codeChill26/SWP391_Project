@@ -1,37 +1,9 @@
 import { Avatar, Card, Col, Rate, Row } from "antd";
 import { UserLayout } from "../layout/userLayout";
 import { VerifiedUserOutlined } from "@mui/icons-material";
+import { Link } from "react-router-dom";
+import blogData from "../components/BlogData";
 
-const blogData = [
-  {
-    title: 'Các bệnh lây truyền qua đường tình dục',
-    author: 'Hoàng Thị Lành',
-    experience: 9,
-    rating: 4.8,
-    image: 'src/assets/images/Blog_STD.png',
-  },
-  {
-    title: 'Bệnh giang mai và những điều cần biết',
-    author: 'Hoàng Thị Lành',
-    experience: 9,
-    rating: 4.8,
-    image: 'src/assets/images/Blog_Syphilis.png',
-  },
-  {
-    title: 'Tháng nhận thức HIV',
-    author: 'Nguyễn Thanh Bình',
-    experience: 10,
-    rating: 4.9,
-    image: 'src/assets/images/Blog_HIV.png',
-  },
-  {
-    title: 'Chu trì kinh nguyệt và các thông tin quan trọng',
-    author: 'Nguyễn Thanh Bình',
-    experience: 10,
-    rating: 4.9,
-    image: 'src/assets/images/Blog_Menstrual.png',
-  },
-];
 const Blog = () => {
    return (
     <UserLayout>
@@ -43,7 +15,9 @@ const Blog = () => {
               hoverable
               cover={<img alt="example" src={item.image} style={{ height: 200, objectFit: 'cover' }} />}
             >
+              <Link to={`/blogs/${item.id}`}>
               <h3>{item.title}</h3>
+              </Link>
               <div style={{ display: 'flex', alignItems: 'center', marginTop: 12 }}>
                 <Avatar icon={<VerifiedUserOutlined />} size="small" />
                 <div style={{ marginLeft: 8 }}>

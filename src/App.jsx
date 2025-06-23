@@ -14,6 +14,8 @@ import Service from "./pages/Service";
 import Services from "./pages/Services";
 import Booking from "./pages/Booking";
 import Contact from "./pages/Contact";
+import BlogDetail from "./components/BlogDetail";
+
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
         <Route path="/blog" element={<Blog/>}/>
         <Route path="/booking" element={<Booking/>}/>
         <Route path="/help" element={<Contact/>}/>
+                <Route path="/blogs" element={<Blog />} />
+        <Route path="/blogs/:id" element={<BlogDetail />} />
       </Routes>
       <ToastContainer />
     </Router>
