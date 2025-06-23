@@ -3,13 +3,13 @@ import { Button, Menu, ConfigProvider, Avatar, Dropdown, Switch } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { HomeOutlined, AppstoreOutlined, FileTextOutlined, QuestionCircleOutlined, InfoCircleOutlined, CalendarOutlined, BellOutlined, UserOutlined, LogoutOutlined, SettingOutlined } from "@ant-design/icons";
 import { useUser } from '../context/UserContext';
-import { useMock } from '../context/MockContext';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { userData, isLoggedIn, logout } = useUser();
-  const { useMockData, toggleMockMode, mockUsers } = useMock();
+  const { logout, userData, isLoggedIn } = useUser();
+  const name = userData?.name || '';
+  const avatar = userData?.avatar || '';
 
   const handleLogout = () => {
     logout();
@@ -19,58 +19,28 @@ export default function Navbar() {
   const menuItems = [
     {
       key: "/",
-      icon: <HomeOutlined style={{ fontSize: '18px' }} />,
+      icon: <HomeOutlined style={{ fontSize: '18px', color: '#fff' }} />,
       label: "Home",
     },
     {
       key: "/service",
-      icon: <AppstoreOutlined style={{ fontSize: '18px' }} />,
+      icon: <AppstoreOutlined style={{ fontSize: '18px', color: '#fff' }} />,
       label: "Services",
     },
     {
-      key: "/booking",
-      icon: <CalendarOutlined style={{ fontSize: '18px' }} />,
-      label: "Booking",
-    },
-    {
       key: "/blog",
-      icon: <FileTextOutlined style={{ fontSize: '18px' }} />,
+      icon: <FileTextOutlined style={{ fontSize: '18px', color: '#fff' }} />,
       label: "Blog",
     },
     {
       key: "/help",
-      icon: <QuestionCircleOutlined style={{ fontSize: '18px' }} />,
+      icon: <QuestionCircleOutlined style={{ fontSize: '18px', color: '#fff' }} />,
       label: "Help Center",
     },
     {
       key: "/about",
-      icon: <InfoCircleOutlined style={{ fontSize: '18px' }} />,
+      icon: <InfoCircleOutlined style={{ fontSize: '18px', color: '#fff' }} />,
       label: "About",
-    },
-  ];
-
-  // Dropdown menu cho user đã đăng nhập
-  const userMenuItems = [
-    {
-      key: 'profile',
-      icon: <UserOutlined />,
-      label: 'Profile',
-      onClick: () => navigate('/dashboard'),
-    },
-    {
-      key: 'settings',
-      icon: <SettingOutlined />,
-      label: 'Settings',
-      onClick: () => navigate('/profile'),
-    },
-    {
-      type: 'divider',
-    },
-    {
-      key: 'logout',
-      icon: <LogoutOutlined />,
-      label: 'Logout',
-      onClick: handleLogout,
     },
   ];
 
@@ -122,40 +92,31 @@ export default function Navbar() {
 
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
-            {/* Mock Mode Toggle */}
-            <div className="flex items-center space-x-2">
-              <span className="text-white text-xs">Mock</span>
-              <Switch
-                size="small"
-                checked={useMockData}
-                onChange={toggleMockMode}
-                style={{ backgroundColor: useMockData ? '#52c41a' : '#d9d9d9' }}
-              /> 
-            </div>
-
             {isLoggedIn ? (
               <>
-                <BellOutlined style={{ fontSize: '22px', color: 'white' }} />
+                <BellOutlined style={{ color: '#fff' }} className="text-2xl ml-4 cursor-pointer" />
+                <span className="text-white text-base font-medium mx-2">{name}</span>
                 <Dropdown
-                  menu={{ items: userMenuItems }}
+                  overlay={
+                    <Menu>
+                      <Menu.Item key="profile" icon={<UserOutlined style={{color: '#3B9AB8'}} />} onClick={() => navigate('/profile')}>
+                        Profile
+                      </Menu.Item>
+                      <Menu.Item key="logout" icon={<LogoutOutlined style={{color: '#3B9AB8'}} />} onClick={handleLogout}>
+                        Logout
+                      </Menu.Item>
+                    </Menu>
+                  }
                   placement="bottomRight"
-                  arrow
+                  trigger={["click"]}
                 >
-                  <div className="flex items-center cursor-pointer hover:opacity-80 transition-opacity">
-                    <Avatar
-                      size={32}
-                      src={userData.avatar}
-                      icon={<UserOutlined />}
-                      style={{ 
-                        backgroundColor: '#fff',
-                        color: '#3B9AB8',
-                        marginRight: '8px'
-                      }}
-                    />
-                    <span className="text-white text-base font-medium">
-                      {userData.name}
-                    </span>
-                  </div>
+                  <span className="flex items-center cursor-pointer">
+                    {avatar ? (
+                      <img src={avatar} alt="avatar" className="w-9 h-9 rounded-full object-cover border-2 border-white" />
+                    ) : (
+                      <UserOutlined style={{ color: '#fff' }} className="text-2xl" />
+                    )}
+                  </span>
                 </Dropdown>
               </>
             ) : (

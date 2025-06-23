@@ -13,31 +13,28 @@ import Admin from "./pages/Admin";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserProvider } from './context/UserContext';
-import { MockProvider } from './context/MockContext';
 import ServiceUser from "./pages/ServiceUser";
 
 function App() {
   return (
-    <MockProvider>
-      <UserProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/service" element={<Service />}/>
-            <Route path="/services" element={<ServiceUser />} />
-            <Route path="/blog" element={<Blog/>}/>
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/about" element={<About />} />
-          </Routes>
-          <ToastContainer />
-        </Router>
-      </UserProvider>
-    </MockProvider>
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/service" element={<Service />}/>
+          <Route path="/services" element={<ServiceUser />} />
+          <Route path="/blog" element={<Blog/>}/>
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+        <ToastContainer />
+      </Router>
+    </UserProvider>
   );
 }
 

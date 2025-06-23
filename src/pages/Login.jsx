@@ -3,47 +3,68 @@ import { Button, Form, Input, Alert, Card } from 'antd';
 import { UserOutlined, LockOutlined, CloseOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useUser } from '../context/UserContext';
-import { useMock } from '../context/MockContext';
 import 'react-toastify/dist/ReactToastify.css';
+import { jwtDecode } from 'jwt-decode';
+
+
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const { login } = useUser();
-  const { useMockData, mockUsers } = useMock();
 
-  const onFinish = async (values) => {
-    setLoading(true);
-    setLoginError('');
-    
-    try {
-      const result = await login(values.username, values.password);
+    const onFinish = async (values) => {
+      setLoading(true);
+      setLoginError('');
       
-      if (result.success) {
-        toast.success(result.message);
+      try {
+        const response = await fetch('https://api-genderhealthcare.purintech.id.vn/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            email: values.email,
+            password: values.password,
+          }),
+        });
+
+        const data = await response.json();
+        console.log("🔍 Dữ liệu trả về từ API:", data); // 👉 kiểm tra response
+        if (response.ok && data.token) {
+          const token = data.token;
+          const decoded = jwtDecode(token); // 👉 lấy user info từ token
+          console.log('Thông tin giải mã:', decoded);
+          console.log(decoded.userId);
+
+          localStorage.setItem('token', token);
+          localStorage.setItem('email', decoded.username); // dùng 'username' trong token
+          localStorage.setItem('userRole', decoded.role);
+          localStorage.setItem('name', decoded.name);
         
-        // Chuyển hướng dựa trên role
-        if (result.role === 'admin') {
-          navigate('/admin');
+          toast.success('Đăng nhập thành công!');
+          
+          
+          if (decoded.role === 'admin') {
+            navigate('/admin');
+          } else if (decoded.role === 'patient') {
+            navigate('/');
+          } else {
+            navigate('/');
+          }
         } else {
-          navigate('/'); // Chuyển về trang home cho user
+          setLoginError(data.message || 'Đăng nhập thất bại!');
+          toast.error(data.message || 'Đăng nhập thất bại!');
         }
-      } else {
-        setLoginError(result.message);
-        toast.error(result.message);
+      } catch (error) {
+        setLoginError('Lỗi kết nối. Vui lòng thử lại.');
+        toast.error('Lỗi kết nối. Vui lòng thử lại.');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Lỗi đăng nhập:', error);
-      const errorMsg = 'Lỗi kết nối. Vui lòng thử lại.';
-      setLoginError(errorMsg);
-      toast.error(errorMsg);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
   return (
     <div className='flex h-screen w-screen overflow-hidden'>
@@ -56,7 +77,7 @@ const Login = () => {
 
       <div className='hidden md:block w-1/2 h-full relative bg-gray-100'>
         <img
-          src='/src/assets/images/side.png'
+          src='/src/assets/images/side1.png'
           alt='Healthcare Illustration'
           className='absolute top-0 left-0 w-full h-full object-cover'
         />
@@ -69,42 +90,16 @@ const Login = () => {
             <p className='text-gray-600'>Sign in to access your account</p>
           </div>
 
-          {/* Mock Mode Alert */}
-          {useMockData && (
-            <Alert
-              message="Mock Mode Active"
-              description={
-                <div>
-                  <p className="mb-2">API backend đang lỗi. Sử dụng tài khoản mock để test:</p>
-                  <div className="space-y-1 text-sm">
-                    {mockUsers.map((user, index) => (
-                      <div key={index} className="flex justify-between items-center">
-                        <span className="font-medium">{user.name} ({user.role})</span>
-                        <span className="text-gray-600">{user.email}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="mt-2 text-xs text-gray-500">
-                    Mật khẩu: bất kỳ (trong mock mode)
-                  </p>
-                </div>
-              }
-              type="info"
-              showIcon
-              icon={<InfoCircleOutlined />}
-              className="mb-6"
-            />
-          )}
-
           <Form form={form} name='login_form' layout='vertical' onFinish={onFinish}>
             <Form.Item
-              name='username'
-              rules={[{ required: true, message: 'Please input your username!' }]}
+              name='email'
+              rules={[{ required: true, message: 'Please input your email address!' }]}
             >
               <Input
                 prefix={<UserOutlined className='text-gray-400' />}
-                placeholder='Username'
+                placeholder='Email Address'
                 size='large'
+                type='email'
               />
             </Form.Item>
 

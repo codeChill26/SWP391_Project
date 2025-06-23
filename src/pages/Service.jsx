@@ -1,104 +1,74 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Button } from 'antd';
+import { Button, Modal, DatePicker, TimePicker, Radio, Input, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-
-const allServices = [
-  {
-    id: 1,
-    title: "Gender-Affirming Hormone Therapy",
-    description: "Comprehensive hormone therapy services including consultation, monitoring, and ongoing support for transgender and non-binary individuals.",
-    icon: "💊",
-    price: "From $150/month",
-    duration: "Ongoing treatment"
-  },
-  {
-    id: 2,
-    title: "Mental Health Support",
-    description: "Professional counseling and therapy services specifically designed for gender-diverse individuals and their families.",
-    icon: "🧠",
-    price: "$120/session",
-    duration: "50 minutes"
-  },
-  {
-    id: 3,
-    title: "Voice Therapy",
-    description: "Specialized voice training and therapy to help align voice characteristics with gender identity.",
-    icon: "🎤",
-    price: "$100/session",
-    duration: "45 minutes"
-  },
-  {
-    id: 4,
-    title: "Facial Feminization Surgery",
-    description: "Comprehensive facial feminization procedures to enhance feminine features.",
-    icon: "✨",
-    price: "From $15,000",
-    duration: "4-6 hours"
-  },
-  {
-    id: 5,
-    title: "Top Surgery",
-    description: "Chest masculinization or feminization surgery with pre and post-operative care.",
-    icon: "🔬",
-    price: "From $8,000",
-    duration: "2-3 hours"
-  },
-  {
-    id: 6,
-    title: "Legal Support",
-    description: "Assistance with legal documentation changes, name changes, and other legal aspects of gender transition.",
-    icon: "⚖️",
-    price: "$200/hour",
-    duration: "Varies"
-  },
-  {
-    id: 7,
-    title: "Hair Removal",
-    description: "Laser hair removal and electrolysis services for gender-affirming care.",
-    icon: "💇",
-    price: "From $75/session",
-    duration: "30-60 minutes"
-  },
-  {
-    id: 8,
-    title: "Fertility Preservation",
-    description: "Egg or sperm freezing services before starting hormone therapy.",
-    icon: "🥚",
-    price: "From $5,000",
-    duration: "2-3 weeks"
-  },
-  {
-    id: 9,
-    title: "Support Groups",
-    description: "Regular support group meetings for transgender and non-binary individuals.",
-    icon: "👥",
-    price: "Free",
-    duration: "90 minutes"
-  },
-  {
-    id: 10,
-    title: "Nutritional Counseling",
-    description: "Specialized nutritional guidance for individuals undergoing hormone therapy.",
-    icon: "🥗",
-    price: "$80/session",
-    duration: "60 minutes"
-  }
-];
+import axios from 'axios';
+import moment from 'moment';
 
 const Service = () => {
+  const [services, setServices] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+  const [date, setDate] = useState(null);
+  const [time, setTime] = useState(null);
+  const [payment, setPayment] = useState('cash');
+  const [notes, setNotes] = useState('');
+  const [conclusion, setConclusion] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleBooking = (serviceId) => {
-    navigate(`/calendar?service=${serviceId}`);
+  useEffect(() => {
+    axios.get('https://api-genderhealthcare.purintech.id.vn/api/services')
+      .then(res => setServices(res.data))
+      .catch(() => setServices([]));
+  }, []);
+
+  const userId = Number(localStorage.getItem('userId'));
+
+  const showBookingModal = (service) => {
+    setSelectedService(service);
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setSelectedService(null);
+    setDate(null);
+  };
+
+  const handleBooking = async () => {
+    if (!date || !selectedService) {
+      message.error('Vui lòng chọn ngày!');
+      return;
+    }
+    try {
+      const userId = Number(localStorage.getItem('userId'));
+      const appointmentTime = moment(date).startOf('day').toISOString();
+      const data = {
+        user_id: userId,
+        service_id: selectedService.id,
+        appointment_time: appointmentTime,
+        specialization: 'General',
+        status: 'pending',
+        notes: 'nothing',
+        conclusion: null,
+        payment_status: 'pending'
+      };
+      await axios.post('https://api-genderhealthcare.purintech.id.vn/api/appointments/schedule', data);
+      message.success('Đặt lịch thành công!');
+      setModalOpen(false);
+      setSelectedService(null);
+      setDate(null);
+    } catch (err) {
+      message.error('Đặt lịch thất bại!');
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex-grow">
-        {/* Hero Section */}
         <div className="bg-[#3B9AB8] text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
@@ -109,50 +79,63 @@ const Service = () => {
             </div>
           </div>
         </div>
-
-        {/* Services Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allServices.map(service => (
-              <div
-                key={service.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+        <div className="max-w-7xl mx-auto py-8 px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {services.map(service => (
+            <div key={service.id} className="bg-white rounded-lg shadow p-6 flex flex-col items-stretch justify-between aspect-square min-h-[300px]">
+              <h2 className="text-xl font-bold mb-2">{service.name}</h2>
+              <p className="text-gray-600 mb-2">{service.description}</p>
+              <p className="text-blue-600 font-semibold mb-2">Giá: {service.price.toLocaleString()} VNĐ</p>
+              <div className="flex-1"></div>
+              <Button
+                type="primary"
+                style={{ background: '#3B9AB8', borderColor: '#3B9AB8' }}
+                onClick={() => showBookingModal(service)}
               >
-                <div className="p-6">
-                  <div className="text-4xl mb-4">{service.icon}</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    {service.description}
-                  </p>
-                  <div className="border-t border-gray-200 pt-4 mt-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-lg font-semibold text-[#3B9AB8]">{service.price}</p>
-                        <p className="text-sm text-gray-500">{service.duration}</p>
-                      </div>
-                      <Button
-                        type="primary"
-                        onClick={() => handleBooking(service.id)}
-                        style={{
-                          backgroundColor: '#3B9AB8',
-                          borderColor: '#3B9AB8',
-                        }}
-                      >
-                        Booking
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                Book Now
+              </Button>
+            </div>
+          ))}
         </div>
       </div>
       <Footer />
+      <Modal
+        title="Đặt lịch dịch vụ"
+        open={modalOpen}
+        onCancel={handleModalClose}
+        footer={null}
+      >
+        <div className="mb-4">
+          <label>Tên dịch vụ:</label>
+          <Input value={selectedService?.name || ''} disabled />
+        </div>
+        <div className="mb-4">
+          <label>Giá dịch vụ:</label>
+          <Input value={selectedService ? `${selectedService.price.toLocaleString()} VNĐ` : ''} disabled />
+        </div>
+        <div className="mb-4">
+          <label>Chọn ngày:</label>
+          <DatePicker
+            className="w-full"
+            value={date}
+            onChange={setDate}
+            disabledDate={d => d && d < new Date()}
+          />
+        </div>
+        <div className="flex justify-end">
+          <Button onClick={handleModalClose} style={{ marginRight: 8 }}>
+            Hủy
+          </Button>
+          <Button
+            type="primary"
+            style={{ background: '#3B9AB8', borderColor: '#3B9AB8' }}
+            onClick={handleBooking}
+          >
+            Tiếp tục
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 };
 
-export default Service; 
+export default Service;
