@@ -1,10 +1,5 @@
 import { Flex, Image } from 'antd';
-import React from 'react';
 import { UserLayout } from '../layout/userLayout';
-const baseStyle = {
-  width: '50%',
-  height: 54,
-};
 
 const About = () => {
   return (
