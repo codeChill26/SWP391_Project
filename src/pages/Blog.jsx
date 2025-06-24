@@ -13,7 +13,7 @@ const Blog = () => {
           <Col xs={24} sm={12} md={12} lg={12} xl={12} key={index}>
             <Card
               hoverable
-              cover={<img alt="example" src={item.image} style={{ height: 200, objectFit: 'cover' }} />}
+              cover={<img alt="example" src={item.image} style={{ height: 400, objectFit: 'cover' }} />}
             >
               <Link to={`/blogs/${item.id}`}>
               <h3>{item.title}</h3>

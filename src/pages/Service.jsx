@@ -47,7 +47,7 @@ const allServices = [
     yearsExperience: "7 years",
     price: 70,
     time: "09:00 AM-12:00 PM",
-    image: "/src/assets/images/service-Voices.png",
+    image: "/src/assets/images/service-voice.png",
   },
   {
     id: 6,
@@ -92,7 +92,7 @@ const allServices = [
     yearsExperience: "5 years",
     price: 40,
     time: "06:00 PM-08:00 PM",
-    image: "/src/assets/images/service-Menstrual.jpg",
+    image: "/src/assets/images/service-Menstrual.png",
   },
 ];
 

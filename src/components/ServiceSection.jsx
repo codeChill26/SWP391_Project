@@ -54,7 +54,7 @@ const services = [
   {
     title: "Tiêm chủng mở rộng",
     desc: "Đăng ký tiêm chủng cho trẻ em và người lớn.",
-    img: "/src/assets/images/service-vacccination.png",
+    img: "/src/assets/images/service-vaccination.png",
     button: "Đăng ký",
     bg: "bg-[#F7D774]",
   },
@@ -68,8 +68,8 @@ const services = [
   {
     title: "Theo dõi chu kỳ kinh nguyệt",
     desc: "Theo dõi và quản lý chu kỳ kinh nguyệt của bạn.",
-    img: "/src/assets/images/service-Menstrual.jpg",
-    button: "Tìm hiểu",
+    img: "/src/assets/images/service-menstrual.png",
+    button: "Bắt đầu",
     bg: "bg-[#B2F7C1]",
   },
 ];

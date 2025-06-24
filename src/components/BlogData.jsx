@@ -33,5 +33,29 @@ const blogData = [
     rating: 4.9,
     image: 'src/assets/images/Blog_Menstrual.png',
   },
+  {
+    id: '5',
+    title: "Những điều cần biết về sức khỏe giới tính",
+    author: 'Trần Văn An',
+    experience: 8,
+    rating: 4.7,
+    image: "src/assets/images/blog_genderhealth.png",
+    },
+  {
+    id: '6',
+    title: "Tầm quan trọng của xét nghiệm định kỳ",
+    author: 'Trần Văn An',
+    experience: 8,
+    rating: 4.7,
+    image: "src/assets/images/blog_checkup.png",
+     },
+  {
+    id: '7',
+    title: "PrEP & PEP: Dự phòng HIV hiệu quả",
+    author: 'Trần Văn An',
+    experience: 8,
+    rating: 4.7,
+    image: "src/assets/images/blog_PrEp.png",
+  },
 ];
 export default blogData;
