@@ -54,12 +54,12 @@ const Register = () => {
         <CloseOutlined className='text-2xl text-gray-600' />
       </button>
 
-      {/* Left side - Image */}
+      {/* Hình minh họa bên trái giống Login */}
       <div className='hidden md:block w-1/2 h-full relative bg-gray-100'>
-        <img 
-          src="/src/assets/images/side.png" 
-          alt="Healthcare Illustration" 
-          className='absolute top-0 left-0 w-full h-full object-cover' 
+        <img
+          src='/src/assets/images/side1.png'
+          alt='Healthcare Illustration'
+          className='absolute top-0 left-0 w-full h-full object-cover'
         />
       </div>
       

@@ -1,5 +1,6 @@
 import Footer from "../components/Footer"
 import Navbar from "../components/Navbar"
+import ChatWidget from "../components/ChatWidget"
 
 export const UserLayout = (props) => {
     return (
@@ -9,6 +10,7 @@ export const UserLayout = (props) => {
                 {props.children}
             </div>
             <Footer />
+            <ChatWidget />  
         </div>
     )
 }

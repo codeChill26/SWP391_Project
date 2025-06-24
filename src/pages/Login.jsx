@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Button, Form, Input } from 'antd';
-import { UserOutlined, LockOutlined, CloseOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Alert, Card } from 'antd';
+import { UserOutlined, LockOutlined, CloseOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
+import { jwtDecode } from 'jwt-decode';
+
+
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,7 @@ const Login = () => {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('username', response.data.username || values.username);
         toast.success('Đăng nhập thành công!');
-        navigate('/profile');
+        navigate('/user');
       } else {
         const errorMsg = response.data.message || 'Sai tên đăng nhập hoặc mật khẩu!';
         setLoginError(errorMsg);
@@ -46,10 +48,8 @@ const Login = () => {
     }
   };
 
-
   return (
     <div className='flex h-screen w-screen overflow-hidden'>
-      {/* Close button */}
       <button
         onClick={() => navigate('/')}
         className='absolute top-4 right-4 z-50 p-2 rounded-full hover:bg-gray-100 transition-colors'
@@ -57,66 +57,65 @@ const Login = () => {
         <CloseOutlined className='text-2xl text-gray-600' />
       </button>
 
-      {/* Left side - Image */}
       <div className='hidden md:block w-1/2 h-full relative bg-gray-100'>
         <img
-          src="/src/assets/images/side.png"
-          alt="Healthcare Illustration"
+          src='/src/assets/images/side1.png'
+          alt='Healthcare Illustration'
           className='absolute top-0 left-0 w-full h-full object-cover'
         />
       </div>
 
-      {/* Right side - Form */}
       <div className='w-full md:w-1/2 h-full flex justify-center items-center bg-white p-6 overflow-y-auto'>
         <div className='w-full max-w-md'>
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to access your account</p>
+          <div className='text-center mb-8'>
+            <h1 className='text-3xl font-bold text-gray-800 mb-2'>Welcome Back</h1>
+            <p className='text-gray-600'>Sign in to access your account</p>
           </div>
 
-          <Form
-            form={form}
-            name="login_form"
-            layout="vertical"
-            onFinish={onFinish}
-          >
+          <Form form={form} name='login_form' layout='vertical' onFinish={onFinish}>
             <Form.Item
-              name="username"
-              rules={[{ required: true, message: 'Please input your username!' }]}
+              name='email'
+              rules={[{ required: true, message: 'Please input your email address!' }]}
             >
               <Input
-                prefix={<UserOutlined className="text-gray-400" />}
-                placeholder="Username"
-                size="large"
+                prefix={<UserOutlined className='text-gray-400' />}
+                placeholder='Email Address'
+                size='large'
+                type='email'
               />
             </Form.Item>
 
             <Form.Item
-              name="password"
+              name='password'
               rules={[{ required: true, message: 'Please input your password!' }]}
             >
               <Input.Password
-                prefix={<LockOutlined className="text-gray-400" />}
-                placeholder="Password"
-                size="large"
+                prefix={<LockOutlined className='text-gray-400' />}
+                placeholder='Password'
+                size='large'
               />
             </Form.Item>
 
-            <div className="flex justify-between items-center mb-6">
-              <Form.Item name="remember" valuePropName="checked" className="mb-0">
-                <div className="flex items-center">
-                  <input type="checkbox" className="mr-2 rounded text-blue-500 focus:ring-blue-400" />
-                  <span className="text-gray-600">Remember me</span>
+            <div className='flex justify-between items-center mb-6'>
+              <Form.Item name='remember' valuePropName='checked' className='mb-0'>
+                <div className='flex items-center'>
+                  <input
+                    type='checkbox'
+                    className='mr-2 rounded text-blue-500 focus:ring-blue-400'
+                  />
+                  <span className='text-gray-600'>Remember me</span>
                 </div>
               </Form.Item>
-              <a href="#" className="text-blue-500 hover:underline">Forgot password?</a>
+              <a href='#' className='text-blue-500 hover:underline'>
+                Forgot password?
+              </a>
             </div>
 
             <Form.Item>
               <Button
                 type="primary"
                 htmlType="submit"
-                className="w-full h-12 text-lg bg-blue-500 hover:bg-blue-600 border-none"
+                className='w-full h-12 text-lg bg-blue-500 hover:bg-blue-600 border-none'
                 loading={loading}
               >
                 Sign In
@@ -129,10 +128,13 @@ const Login = () => {
               </div>
             )}
 
-            <div className="text-center mt-6">
-              <p className="text-gray-600">
+            <div className='text-center mt-6'>
+              <p className='text-gray-600'>
                 Don't have an account?{' '}
-                <a onClick={() => navigate("/register")} className="text-blue-500 font-medium hover:underline cursor-pointer">
+                <a
+                  onClick={() => navigate('/register')}
+                  className='text-blue-500 font-medium hover:underline cursor-pointer'
+                >
                   Sign up
                 </a>
               </p>
