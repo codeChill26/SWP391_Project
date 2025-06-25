@@ -4,6 +4,7 @@ import { UserOutlined, LockOutlined, CloseOutlined, InfoCircleOutlined } from '@
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useUser } from '../../context/UserContext';
 
 
 
@@ -11,7 +12,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [form] = Form.useForm();
-    const { login } = useUser();
+  const { login } = useUser();
   const navigate = useNavigate();
 
     const onFinish = async (values) => {

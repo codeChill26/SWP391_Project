@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const BASE_URL = 'https://api-genderhealthcare.purintech.id.vn/api/medical-tests';
 
 export const medicalTestApi = {

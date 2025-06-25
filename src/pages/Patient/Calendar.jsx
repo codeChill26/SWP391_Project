@@ -3,11 +3,15 @@ import MainLayout from '../../layout/MainLayout';
 import { useUser } from '../../context/UserContext';
 import { Calendar } from 'antd';
 import axios from 'axios';
+import AppointmentDrawer from '../../components/patients/AppointmentDrawer';
 
 const CalendarPage = () => {
   const { userData } = useUser();
   const [appointments, setAppointments] = useState([]);
   const [serviceDetails, setServiceDetails] = useState({});
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDateAppointments, setSelectedDateAppointments] = useState([]);
 
   useEffect(() => {
     if (!userData.id) return;
@@ -61,6 +65,22 @@ const CalendarPage = () => {
     );
   };
 
+  // Xử lý khi click vào ngày
+  const onDateSelect = (value) => {
+    const selectedDateStr = value.format('YYYY-MM-DD');
+    const appts = appointments.filter(appt => {
+      if (!appt.appointmentTime) return false;
+      const apptDate = new Date(appt.appointmentTime);
+      return apptDate.getFullYear() === value.year() &&
+        apptDate.getMonth() === value.month() &&
+        apptDate.getDate() === value.date();
+    });
+    
+    setSelectedDate(selectedDateStr);
+    setSelectedDateAppointments(appts);
+    setDrawerVisible(true);
+  };
+
   const onPanelChange = (value, mode) => {
     console.log(value.format('YYYY-MM-DD'), mode);
   };
@@ -69,8 +89,20 @@ const CalendarPage = () => {
     <MainLayout activeMenu="calendar" displayName={userData.name || 'User'}>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 bg-white rounded-xl shadow p-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Calendar</h1>
-        <Calendar onPanelChange={onPanelChange} dateCellRender={dateCellRender} />
+        <Calendar 
+          onPanelChange={onPanelChange} 
+          dateCellRender={dateCellRender}
+          onSelect={onDateSelect}
+        />
       </div>
+
+      <AppointmentDrawer
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        selectedDate={selectedDate}
+        appointments={selectedDateAppointments}
+        serviceDetails={serviceDetails}
+      />
     </MainLayout>
   );
 };

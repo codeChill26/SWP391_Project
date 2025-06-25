@@ -49,6 +49,7 @@ export const UserProvider = ({ children }) => {
       );
       if (response.data) {
         const userProfile = response.data;
+        console.log("userProfile", userProfile) 
         setUserData({
           name: userProfile.name || userProfile.fullname||'',
           email: userProfile.email || '',
@@ -60,6 +61,9 @@ export const UserProvider = ({ children }) => {
           avatar: userProfile.avatar || '',
         });
         localStorage.setItem('name', userProfile.name || userProfile.fullname || '');
+        localStorage.setItem('email', userProfile.email || '');
+        localStorage.setItem('role', userProfile.role || '');
+        localStorage.setItem('id', userProfile.id || '');
         setIsLoggedIn(true);
       }
     } catch (error) {
@@ -145,6 +149,10 @@ export const UserProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    localStorage.removeItem('role');
+    localStorage.removeItem('id');    
+    localStorage.removeItem('name');    
     setUserData({
       name: "",
       email: "",

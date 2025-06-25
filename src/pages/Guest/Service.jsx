@@ -4,12 +4,14 @@ import Footer from '../../components/Footer';
 import { Button, Modal, DatePicker, TimePicker, Radio, Input, message } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
+import { appointmentApi } from '../../api/appointment-api';
 
 const Service = () => {
   const [services, setServices] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [date, setDate] = useState(null);
+  const [notes, setNotes] = useState('');
   
 
   useEffect(() => {
@@ -27,6 +29,7 @@ const Service = () => {
     setModalOpen(false);
     setSelectedService(null);
     setDate(null);
+    setNotes('');
   };
 
   const handleBooking = async () => {
@@ -35,23 +38,23 @@ const Service = () => {
       return;
     }
     try {
-      const userId = Number(localStorage.getItem('userId'));
+      const userId = Number(localStorage.getItem('id'));
       const appointmentTime = moment(date).startOf('day').toISOString();
       const data = {
-        user_id: userId,
         service_id: selectedService.id,
-        appointment_time: appointmentTime,
-        specialization: 'General',
-        status: 'pending',
-        notes: 'nothing',
-        conclusion: null,
-        payment_status: 'pending'
+        userId: userId,
+        specialization: 'ANDROLOGY', // TODO: Chuyên khoa nam khoa (ANDROLOGY), nữ khoa GYNECOLOGY
+        notes: notes || '',
+        appointmentTime: appointmentTime,
+        paymentMethod: 'pending'
       };
-      await axios.post('https://api-genderhealthcare.purintech.id.vn/api/appointments/schedule', data);
+      const response = await appointmentApi.scheduleAppointment(data);
+      console.log("schedule data", response)
       message.success('Đặt lịch thành công!');
       setModalOpen(false);
       setSelectedService(null);
       setDate(null);
+      setNotes('');
     } catch {
       message.error('Đặt lịch thất bại!');
     
@@ -112,6 +115,14 @@ const Service = () => {
             value={date}
             onChange={setDate}
             disabledDate={d => d && d < new Date()}
+          />
+        </div>
+        <div className="mb-4">
+          <label>Nêu tình trạng (Nếu có):</label>
+          <Input 
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Nhập tình trạng của bạn..."
           />
         </div>
         <div className="flex justify-end">
