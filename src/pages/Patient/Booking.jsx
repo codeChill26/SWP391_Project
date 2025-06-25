@@ -1,5 +1,5 @@
 import React from 'react'
-import { UserLayout } from '../layout/userLayout'
+import { UserLayout } from '../../layout/userLayout'
 
 const Booking = () => {
   return (

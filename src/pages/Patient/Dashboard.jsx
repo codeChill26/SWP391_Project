@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaSearch, FaMapMarkerAlt, FaCalendarAlt, FaChevronLeft, FaChevronRight, FaChevronUp, FaClock, FaDollarSign } from "react-icons/fa";
-import MainLayout from "../layout/MainLayout";
-import { useUser } from "../context/UserContext";
-import { Calendar } from 'antd';
+import { FaSearch, FaCalendarAlt,  FaChevronRight, FaClock, FaDollarSign } from "react-icons/fa";
+import MainLayout from "../../layout/MainLayout";
+import { useUser } from "../../context/UserContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const services = [
   {
@@ -38,11 +39,40 @@ const services = [
 const Dashboard = () => {
   const navigate = useNavigate();
   const { userData } = useUser();
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [serviceDetails, setServiceDetails] = useState({});
 
-  // Dummy data for upcoming appointments (June 2023)
-  const daysInMonth = Array.from({ length: 30 }, (_, i) => i + 1);
-  const currentMonth = "June 2023";
-  const appointments = [14, 22, 29]; // Example days with appointments
+  useEffect(() => {
+    if (!userData.id) return;
+    setLoading(true);
+    axios.get(`https://api-genderhealthcare.purintech.id.vn/api/appointments/user/${userData.id}`)
+      .then(async res => {
+        let appts = res.data || [];
+        appts = appts.filter(a => !['cancelled', 'rejected', 'pending'].includes((a.status || '').toLowerCase()));
+        setAppointments(appts);
+        setError(null);
+        // Fetch service details for each appointment
+        const serviceIds = appts.map(a => a.serviceId).filter(Boolean);
+        const uniqueServiceIds = [...new Set(serviceIds)];
+        const serviceMap = {};
+        await Promise.all(uniqueServiceIds.map(async (sid) => {
+          try {
+            const resp = await axios.get(`https://api-genderhealthcare.purintech.id.vn/api/services/${sid}`);
+            serviceMap[sid] = resp.data;
+          } catch {
+            toast.error("error");
+          }
+        }));
+        setServiceDetails(serviceMap);
+      })
+      .catch(() => {
+        setAppointments([]);
+        setError("Failed to load appointments");
+      })
+      .finally(() => setLoading(false));
+  }, [userData.id]);
 
   return (
     <MainLayout activeMenu="dashboard" displayName={userData.name || 'User'}>
@@ -96,12 +126,33 @@ const Dashboard = () => {
                 View All <FaChevronRight className="ml-1 text-xs" />
               </button>
             </div>
-            {/* Calendar UI */}
-            <Calendar fullscreen={false} />
-            <div className="text-center text-gray-500 mt-8">
-              <FaCalendarAlt className="text-4xl mx-auto mb-2 text-gray-300" />
-              <p>No upcoming appointments</p>
-            </div>
+            {/* Mini Appointment List */}
+            {loading ? (
+              <div className="text-center py-8 text-gray-400">Loading...</div>
+            ) : error ? (
+              <div className="text-center py-8 text-red-400">{error}</div>
+            ) : appointments.length === 0 ? (
+              <div className="text-center text-gray-500 mt-8">
+                <FaCalendarAlt className="text-4xl mx-auto mb-2 text-gray-300" />
+                <p>No upcoming appointments</p>
+              </div>
+            ) : (
+              <div className="space-y-4 max-h-[350px] overflow-y-auto">
+                {appointments.slice(0, 5).map((appt) => {
+                  const service = appt.serviceId ? serviceDetails[appt.serviceId] : null;
+                  return (
+                    <div key={appt.id} className="flex items-center bg-blue-50 rounded-lg p-3 shadow-sm border border-blue-100">
+                      <div className="flex-1">
+                        <div className="font-semibold text-blue-900 text-sm">
+                          {appt.appointmentTime ? new Date(appt.appointmentTime).toLocaleString() : ''}
+                          {service ? ` - ${service.name}` : ' - Loading...'}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 

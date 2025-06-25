@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 import { Button, Modal, DatePicker, TimePicker, Radio, Input, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 
@@ -11,20 +10,13 @@ const Service = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [date, setDate] = useState(null);
-  const [time, setTime] = useState(null);
-  const [payment, setPayment] = useState('cash');
-  const [notes, setNotes] = useState('');
-  const [conclusion, setConclusion] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  
 
   useEffect(() => {
     axios.get('https://api-genderhealthcare.purintech.id.vn/api/services')
       .then(res => setServices(res.data))
       .catch(() => setServices([]));
   }, []);
-
-  const userId = Number(localStorage.getItem('userId'));
 
   const showBookingModal = (service) => {
     setSelectedService(service);
@@ -60,8 +52,9 @@ const Service = () => {
       setModalOpen(false);
       setSelectedService(null);
       setDate(null);
-    } catch (err) {
+    } catch {
       message.error('Đặt lịch thất bại!');
+    
     }
   };
 

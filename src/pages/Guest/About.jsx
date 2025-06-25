@@ -1,5 +1,5 @@
 import { Flex, Image } from 'antd';
-import { UserLayout } from '../layout/userLayout';
+import { UserLayout } from '../../layout/userLayout';
 
 const About = () => {
   return (

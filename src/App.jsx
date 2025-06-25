@@ -1,19 +1,19 @@
 import React from "react";
 import Home from "./pages/Home";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Login from './pages/Login'
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import Calendar from "./pages/Calendar";
-import Service from "./pages/Service";
-import About from "./pages/About";
-import Blog from "./pages/Blog";
-import Admin from "./pages/Admin";
+import Login from './pages/Guest/Login'
+import Register from "./pages/Guest/Register";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserProvider } from './context/UserContext';
-import ServiceUser from "./pages/ServiceUser";
+import Dashboard from "./pages/Patient/Dashboard";
+import Profile from "./pages/Patient/Profile";
+import Calendar from "./pages/Patient/Calendar";
+import Service from "./pages/Guest/Service";
+import Blog from "./pages/Guest/Blog";
+import Admin from "./pages/Admin/Admin";
+import About from "./pages/Guest/About";
+import ServiceUser from "./pages/Patient/ServiceUser";
 
 function App() {
   return (

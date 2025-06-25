@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import MainLayout from '../layout/MainLayout';
+import MainLayout from '../../layout/MainLayout';
 import axios from 'axios';
 
 const ServiceUser = () => {

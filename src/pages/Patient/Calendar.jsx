@@ -1,6 +1,6 @@
 import React from 'react';
-import MainLayout from '../layout/MainLayout';
-import { useUser } from '../context/UserContext';
+import MainLayout from '../../layout/MainLayout';
+import { useUser } from '../../context/UserContext';
 import { Calendar } from 'antd';
 
 const CalendarPage = () => {

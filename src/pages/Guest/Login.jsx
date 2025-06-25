@@ -58,7 +58,7 @@ const Login = () => {
           setLoginError(data.message || 'Đăng nhập thất bại!');
           toast.error(data.message || 'Đăng nhập thất bại!');
         }
-      } catch (error) {
+      } catch{
         setLoginError('Lỗi kết nối. Vui lòng thử lại.');
         toast.error('Lỗi kết nối. Vui lòng thử lại.');
       } finally {

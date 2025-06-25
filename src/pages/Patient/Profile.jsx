@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { FaEdit, FaStar, FaRegStar, FaEllipsisV } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import MainLayout from "../layout/MainLayout";
+import MainLayout from "../../layout/MainLayout";
 import { toast } from "react-hot-toast";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../../context/UserContext";
 
 const documents = [
   { id: 1, title: "Blood report", date: "May 14, 2023, 13:25 PM", starred: true },
@@ -26,7 +25,6 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [isEditingPersonalInfo, setIsEditingPersonalInfo] = useState(false);
   const [editingData, setEditingData] = useState({});
-  const navigate = useNavigate();
   const { userData, updateUserData } = useUser();
 
   const handleEditPersonalInfo = () => {

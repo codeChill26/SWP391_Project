@@ -1,5 +1,5 @@
 import { Avatar, Card, Col, Rate, Row } from "antd";
-import { UserLayout } from "../layout/userLayout";
+import { UserLayout } from "../../layout/userLayout";
 import { VerifiedUserOutlined } from "@mui/icons-material";
 
 const blogData = [
