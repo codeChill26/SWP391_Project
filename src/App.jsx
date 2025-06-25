@@ -14,6 +14,8 @@ import Blog from "./pages/Guest/Blog";
 import Admin from "./pages/Admin/Admin";
 import About from "./pages/Guest/About";
 import ServiceUser from "./pages/Patient/ServiceUser";
+import { DoctorDashboard } from "./pages/doctor/Dashboard";
+import { DoctorAppointment } from "./pages/doctor/Appointment";
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
           <Route path="/blog" element={<Blog/>}/>
           <Route path="/admin" element={<Admin />} />
           <Route path="/about" element={<About />} />
+          <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+          <Route path="/doctor/appointment" element={<DoctorAppointment />} />
         </Routes>
         <ToastContainer />
       </Router>

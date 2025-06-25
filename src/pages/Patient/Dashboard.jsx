@@ -140,13 +140,21 @@ const Dashboard = () => {
               <div className="space-y-4 max-h-[350px] overflow-y-auto">
                 {appointments.slice(0, 5).map((appt) => {
                   const service = appt.serviceId ? serviceDetails[appt.serviceId] : null;
+                  const dateObj = appt.appointmentTime ? new Date(appt.appointmentTime) : null;
+                  const day = dateObj ? dateObj.toLocaleDateString('en-US', { weekday: 'short' }) : '';
+                  const date = dateObj ? dateObj.getDate() : '';
+                  const month = dateObj ? dateObj.toLocaleDateString('en-US', { month: 'short' }) : '';
+                  const time = dateObj ? dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : '';
                   return (
-                    <div key={appt.id} className="flex items-center bg-blue-50 rounded-lg p-3 shadow-sm border border-blue-100">
-                      <div className="flex-1">
-                        <div className="font-semibold text-blue-900 text-sm">
-                          {appt.appointmentTime ? new Date(appt.appointmentTime).toLocaleString() : ''}
-                          {service ? ` - ${service.name}` : ' - Loading...'}
-                        </div>
+                    <div key={appt.id} className="flex flex-col bg-blue-50 rounded-lg p-3 shadow-sm border border-blue-100">
+                      <div className="font-bold text-lg text-gray-900">
+                        {day} {date} {month}
+                      </div>
+                      <div className="text-md text-gray-700 mb-1">
+                        {time}
+                      </div>
+                      <div className="text-sm text-blue-900 font-semibold">
+                        {service ? service.name : 'Loading...'}
                       </div>
                     </div>
                   );

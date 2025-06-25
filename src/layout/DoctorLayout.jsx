@@ -13,17 +13,16 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 
 const sidebarMenu = [
-  { label: "Home", icon: <AiOutlineHome size={22} />, key: "" },
-  { label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "dashboard" },
-  { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "calendar" },
-  { label: "Profile", icon: <AiOutlineUser size={22} />, key: "profile" },
-  { label: "Services", icon: <FaSyringe size={22} />, key: "services" },  
+  { label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "doctor/dashboard" },
+  { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "doctor/appointment" },
+  { label: "Services", icon: <FaSyringe size={22} />, key: "doctor/services" },  
+  { label: "Patient Profiles", icon: <AiOutlineUser size={22} />, key: "doctor/patient-profiles" },
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];
 
-const MainLayout = ({ children, activeMenu }) => {
+const DoctorLayout = ({ children, activeMenu }) => {
   const navigate = useNavigate();
-  const { logout } = useUser();
+  const { updateUserData, logout } = useUser();
 
   // Lấy tên người dùng trực tiếp từ localStorage
   const name = localStorage.getItem('name') || 'User';
@@ -97,4 +96,4 @@ const MainLayout = ({ children, activeMenu }) => {
   );
 };
 
-export default MainLayout;
+export default DoctorLayout;

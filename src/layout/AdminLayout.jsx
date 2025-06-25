@@ -13,15 +13,13 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 
 const sidebarMenu = [
-  { label: "Home", icon: <AiOutlineHome size={22} />, key: "" },
   { label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "dashboard" },
   { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "calendar" },
-  { label: "Profile", icon: <AiOutlineUser size={22} />, key: "profile" },
   { label: "Services", icon: <FaSyringe size={22} />, key: "services" },  
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];
 
-const MainLayout = ({ children, activeMenu }) => {
+const AdminLayout = ({ children, activeMenu, displayName }) => {
   const navigate = useNavigate();
   const { logout } = useUser();
 
@@ -97,4 +95,4 @@ const MainLayout = ({ children, activeMenu }) => {
   );
 };
 
-export default MainLayout;
+export default AdminLayout;
