@@ -14,6 +14,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserProvider } from './context/UserContext';
 import ServiceUser from "./pages/ServiceUser";
+import { DoctorDashboard } from "./pages/doctor/Dashboard";
+import { DoctorAppointment } from "./pages/doctor/Appointment";
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
           <Route path="/blog" element={<Blog/>}/>
           <Route path="/admin" element={<Admin />} />
           <Route path="/about" element={<About />} />
+          <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+          <Route path="/doctor/appointment" element={<DoctorAppointment />} />
         </Routes>
         <ToastContainer />
       </Router>

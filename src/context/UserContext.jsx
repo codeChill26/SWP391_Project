@@ -88,9 +88,11 @@ export const UserProvider = ({ children }) => {
       if (response.data && response.data.token) {
         const token = response.data.token;
         localStorage.setItem('token', token);
+        
         // Decode token để lấy userId
         const decoded = jwtDecode(token);
         const userId = decoded.userid || decoded.userId || decoded.id;
+        
         if (userId) {
           await fetchUserDataById(token, userId);
         }

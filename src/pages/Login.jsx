@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { jwtDecode } from 'jwt-decode';
+import { useUser } from '../context/UserContext';
 
 
 
@@ -12,6 +13,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [form] = Form.useForm();
+    const { login } = useUser();
   const navigate = useNavigate();
 
     const onFinish = async (values) => {
@@ -19,37 +21,22 @@ const Login = () => {
       setLoginError('');
       
       try {
-        const response = await fetch('https://api-genderhealthcare.purintech.id.vn/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify({
-            email: values.email,
-            password: values.password,
-          }),
-        });
-
-        const data = await response.json();
-        console.log("🔍 Dữ liệu trả về từ API:", data); // 👉 kiểm tra response
-        if (response.ok && data.token) {
-          const token = data.token;
-          const decoded = jwtDecode(token); // 👉 lấy user info từ token
-          console.log('Thông tin giải mã:', decoded);
-          console.log(decoded.userId);
-
-          localStorage.setItem('token', token);
-          localStorage.setItem('email', decoded.username); // dùng 'username' trong token
-          localStorage.setItem('userRole', decoded.role);
-          localStorage.setItem('name', decoded.name);
+        const userData = await login(values.email,values.password)
+        
+        if (userData.success) {
         
           toast.success('Đăng nhập thành công!');
           
           
-          if (decoded.role === 'admin') {
+          if (userData.role === 'admin') {
             navigate('/admin');
-          } else if (decoded.role === 'patient') {
+          } else if (userData.role === 'patient') {
+            navigate('/');
+          } 
+          else if (userData.role === 'doctor') {
+            navigate('/doctor/dashboard');
+          } 
+          else if (userData.role === 'staff') {
             navigate('/');
           } else {
             navigate('/');
@@ -61,6 +48,7 @@ const Login = () => {
       } catch (error) {
         setLoginError('Lỗi kết nối. Vui lòng thử lại.');
         toast.error('Lỗi kết nối. Vui lòng thử lại.');
+        console.log(error)
       } finally {
         setLoading(false);
       }
