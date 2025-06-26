@@ -6,12 +6,15 @@ import StaffLayout from "../../layout/StaffLayout";
 import UpdateAppointmentStatusModal from "../../components/UpdateAppointmentStatusModal";
 import { Button } from "antd";
 import { serviceApi } from "../../api/service-api";
+import DoctorLayout from "../../layout/DoctorLayout";
+import CompleteAppointmentModal from "../../components/CompleteAppointmentModal";
 
-export const StaffAppointmentDetail = () => {
+export const DoctorAppointmentDetail = () => {
   // get the booking id from the url
   const { id } = useParams();
   const [appointment, setAppointment] = useState(null);
-  const [completeModalVisible, setCompleteModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [doctors, setDoctors] = useState([]);
 
 
   useEffect(() => {
@@ -23,17 +26,21 @@ export const StaffAppointmentDetail = () => {
     fetchAppointment();
   }, [id]);
 
-  const handleCompleteAppointment = async (values) => {
+
+  const handleUpdateAppointmentStatus = async (values) => {
+    // values: { id, status, doctorId }
+    // Gọi API cập nhật ở đây
     try {
-      await appointmentApi.completeAppointment(appointment.id, values); // Gọi API
-      setCompleteModalVisible(false);
-      window.location.reload(); // hoặc gọi lại fetchAppointment() nếu muốn mượt hơn
+      const response = await appointmentApi.completeAppointment(appointment.id, values);
+      setModalVisible(false);
+      window.location.reload();
     } catch (error) {
-      // Xử lý lỗi nếu cần
+      console.error("Error updating appointment status:", error);
     }
   };
+
   return (
-    <StaffLayout activeMenu="staff/appointment" pageTitle="Appointment Detail">
+    <DoctorLayout activeMenu="staff/appointment" pageTitle="Appointment Detail">
       {/* Content based on active tab */}
       <div>
         <h2 className="font-bold text-xl mb-4 text-[#3B9AB8] flex items-center gap-2">
@@ -41,7 +48,7 @@ export const StaffAppointmentDetail = () => {
         </h2>
         <AppointmentInfo appointment={appointment} />
 
-        <Button type="primary" onClick={() => setCompleteModalVisible(true)}>
+        <Button type="primary" onClick={() => setModalVisible(true)}>
           Hoàn thành khám bệnh
         </Button>
       </div>
@@ -53,6 +60,13 @@ export const StaffAppointmentDetail = () => {
 
         <div></div>
       </div>
-    </StaffLayout>
+
+      <CompleteAppointmentModal
+        visible={modalVisible}
+        onOk={handleUpdateAppointmentStatus}
+        onCancel={() => setModalVisible(false)}
+        appointment={appointment}
+      />
+    </DoctorLayout>
   );
 };

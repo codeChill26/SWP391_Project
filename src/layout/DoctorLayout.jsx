@@ -14,13 +14,14 @@ import { useUser } from "../context/UserContext";
 
 const sidebarMenu = [
   { label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "doctor/dashboard" },
+  { label: "Calendar", icon: <AiOutlineCalendar size={22} />, key: "doctor/calendar" },
   { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "doctor/appointment" },
   { label: "Services", icon: <FaSyringe size={22} />, key: "doctor/services" },  
   { label: "Patient Profiles", icon: <AiOutlineUser size={22} />, key: "doctor/patient-profiles" },
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];
 
-const DoctorLayout = ({ children, activeMenu }) => {
+const DoctorLayout = ({ children, activeMenu, pageTitle }) => {
   const navigate = useNavigate();
   const { updateUserData, logout } = useUser();
 
@@ -74,7 +75,7 @@ const DoctorLayout = ({ children, activeMenu }) => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="text-gray-500 text-lg">Hi, {name}</div>
-              <div className="text-2xl font-bold capitalize">{activeMenu}</div>
+              <div className="text-2xl font-bold capitalize">{pageTitle}</div>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-gray-500">EN <FaChevronDown className="inline ml-1" /></span>

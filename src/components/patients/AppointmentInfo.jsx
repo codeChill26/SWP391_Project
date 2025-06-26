@@ -27,9 +27,9 @@ export const AppointmentInfo = ({ appointment }) => {
     fetchServices();
   }, []);
 
-  const service = services?.find((s) => s.id === appointment.serviceId);
-  const patient = users?.find((u) => u.id === appointment.userId);
-  const doctor = users?.find((u) => u.id === appointment.doctorId);
+  const service = appointment?.serviceId ? services?.find((s) => s.id === appointment.serviceId) : null;
+  const patient = appointment?.userId ? users?.find((u) => u.id === appointment.userId) : null;
+  const doctor = appointment?.doctorId ? users?.find((u) => u.id === appointment.doctorId) : null;
   return (
     <div>
       <div className="bg-white rounded-lg shadow p-6 max-w-md mx-auto">
@@ -109,6 +109,17 @@ export const AppointmentInfo = ({ appointment }) => {
               </div>
               <p className="italic ml-2">
                 {appointment.conclusion || "Chưa có"}
+              </p>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="material-icons text-gray-400">
+                  <FaDiagnoses />
+                </span>
+                <span className="font-medium">Kế hoạch điều trị:</span>
+              </div>
+              <p className="italic ml-2">
+                {appointment.treatmentPlan || "Chưa có"}
               </p>
             </div>
           </div>
