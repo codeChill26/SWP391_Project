@@ -13,6 +13,7 @@ export const StaffAppointmentDetail = () => {
   const [appointment, setAppointment] = useState(null);
   const [completeModalVisible, setCompleteModalVisible] = useState(false);
 
+  const [medicalTests, setMedicalTests] = useState([]);
 
   useEffect(() => {
     // get the booking data from the database
@@ -22,6 +23,18 @@ export const StaffAppointmentDetail = () => {
     };
     fetchAppointment();
   }, [id]);
+
+  useEffect(() => {
+    if (appointment && appointment.id) {
+      const fetchMedicalTests = async () => {
+        const tests = await medicalTestApi.getMedicalTestByAppointmentId(
+          appointment.id
+        );
+        setMedicalTests(tests);
+      };
+      fetchMedicalTests();
+    }
+  }, [appointment]);
 
   const handleCompleteAppointment = async (values) => {
     try {
@@ -50,8 +63,17 @@ export const StaffAppointmentDetail = () => {
         <h2 className="font-bold text-xl mb-4 text-[#3B9AB8] flex items-center gap-2">
           Kết quả chẩn đoán
         </h2>
+        
 
-        <div></div>
+        {medicalTests.length === 0 ? (
+          <div>Không có xét nghiệm nào.</div>
+        ) : (
+          <div>
+            {medicalTests.map((test) => (
+              <MedicalTestCard key={test.testId} test={test} />
+            ))}
+          </div>
+        )}
       </div>
     </StaffLayout>
   );

@@ -8,6 +8,9 @@ import { Button } from "antd";
 import { serviceApi } from "../../api/service-api";
 import DoctorLayout from "../../layout/DoctorLayout";
 import CompleteAppointmentModal from "../../components/CompleteAppointmentModal";
+import { medicalTestApi } from "../../api/medicalTest-api";
+import MedicalTestCard from "../../components/MedicalTestCard";
+import CreateMedicalTestModal from "../../components/CreateMedicalTestModal";
 
 export const DoctorAppointmentDetail = () => {
   // get the booking id from the url
@@ -15,7 +18,8 @@ export const DoctorAppointmentDetail = () => {
   const [appointment, setAppointment] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [doctors, setDoctors] = useState([]);
-
+  const [medicalTests, setMedicalTests] = useState([]);
+  const [createModalVisible, setCreateModalVisible] = useState(false);
 
   useEffect(() => {
     // get the booking data from the database
@@ -26,12 +30,46 @@ export const DoctorAppointmentDetail = () => {
     fetchAppointment();
   }, [id]);
 
+  useEffect(() => {
+    if (appointment && appointment.id) {
+      const fetchMedicalTests = async () => {
+        const tests = await medicalTestApi.getMedicalTestByAppointmentId(
+          appointment.id
+        );
+        setMedicalTests(tests);
+      };
+      fetchMedicalTests();
+    }
+  }, [appointment]);
+  const handleCreateMedicalTest = async (values) => {
+    try {
+      // Format lại ngày cho đúng chuẩn ISO nếu cần
+      const data = {
+        ...values,
+        testDate: values.testDate.toISOString(),
+      };
+      await medicalTestApi.createMedicalTest(data);
+      setCreateModalVisible(false);
+      // Sau khi tạo thành công, reload lại danh sách
+      if (appointment && appointment.id) {
+        const tests = await medicalTestApi.getMedicalTestByAppointmentId(
+          appointment.id
+        );
+        setMedicalTests(tests);
+      }
+    } catch (error) {
+      // Xử lý lỗi nếu cần
+    }
+  };
 
   const handleUpdateAppointmentStatus = async (values) => {
     // values: { id, status, doctorId }
     // Gọi API cập nhật ở đây
     try {
-      const response = await appointmentApi.completeAppointment(appointment.id, values);
+      const response = await appointmentApi.completeAppointment(
+        appointment.id,
+        values
+      );
       setModalVisible(false);
       window.location.reload();
     } catch (error) {
@@ -57,8 +95,25 @@ export const DoctorAppointmentDetail = () => {
         <h2 className="font-bold text-xl mb-4 text-[#3B9AB8] flex items-center gap-2">
           Kết quả chẩn đoán
         </h2>
+        {appointment && appointment.status !== "COMPLETED" && (
+          <Button
+            type="dashed"
+            onClick={() => setCreateModalVisible(true)}
+            className="mb-4"
+          >
+            Thêm xét nghiệm mới
+          </Button>
+        )}
 
-        <div></div>
+        {medicalTests.length === 0 ? (
+          <div>Không có xét nghiệm nào.</div>
+        ) : (
+          <div>
+            {medicalTests.map((test) => (
+              <MedicalTestCard key={test.testId} test={test} />
+            ))}
+          </div>
+        )}
       </div>
 
       <CompleteAppointmentModal
@@ -66,6 +121,13 @@ export const DoctorAppointmentDetail = () => {
         onOk={handleUpdateAppointmentStatus}
         onCancel={() => setModalVisible(false)}
         appointment={appointment}
+      />
+
+      <CreateMedicalTestModal
+        visible={createModalVisible}
+        onOk={handleCreateMedicalTest}
+        onCancel={() => setCreateModalVisible(false)}
+        appointmentId={appointment?.id}
       />
     </DoctorLayout>
   );
