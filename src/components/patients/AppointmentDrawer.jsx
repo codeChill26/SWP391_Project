@@ -1,6 +1,7 @@
 import React from 'react';
 import { Drawer, List, Tag, Typography, Space } from 'antd';
 import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
 
 const { Text, Title } = Typography;
 
@@ -11,6 +12,7 @@ const AppointmentDrawer = ({
   appointments, 
   serviceDetails 
 }) => {
+  const navigate = useNavigate();
   // Hàm lấy màu tag theo trạng thái
   const getStatusColor = (status) => {
     switch ((status || '').toLowerCase()) {
@@ -49,7 +51,7 @@ const AppointmentDrawer = ({
             const service = appointment.serviceId ? serviceDetails[appointment.serviceId] : null;
             return (
               <List.Item>
-                <div className="w-full">
+                <div className="w-full" onClick={() => navigate(`/appointment/${appointment.id}`)}>
                   <div className="flex justify-between items-start mb-2">
                     <Title level={5} style={{ margin: 0 }}>
                       {service ? service.name : 'Loading...'}

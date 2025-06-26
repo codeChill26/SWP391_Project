@@ -40,6 +40,9 @@ const Service = () => {
     try {
       const userId = Number(localStorage.getItem('id'));
       const appointmentTime = moment(date).startOf('day').toISOString();
+      console.log("appointmentTime", appointmentTime)
+      console.log("date", date)
+
       const data = {
         service_id: selectedService.id,
         userId: userId,
