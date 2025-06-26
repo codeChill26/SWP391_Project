@@ -11,6 +11,7 @@ import {
 import { FaDiagnoses } from "react-icons/fa";
 import { AppointmentInfo } from "../../components/patients/AppointmentInfo";
 import { medicalTestApi } from "../../api/medicalTest-api";
+import MedicalTestCard from "../../components/MedicalTestCard";
   
 export const AppointmentDetail = () => {
   // get the booking id from the url
