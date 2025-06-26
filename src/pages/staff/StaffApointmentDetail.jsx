@@ -6,13 +6,15 @@ import StaffLayout from "../../layout/StaffLayout";
 import UpdateAppointmentStatusModal from "../../components/UpdateAppointmentStatusModal";
 import { Button } from "antd";
 import { serviceApi } from "../../api/service-api";
+import { medicalTestApi } from "../../api/medicalTest-api";
+import MedicalTestCard from "../../components/MedicalTestCard";
 
 export const StaffAppointmentDetail = () => {
   // get the booking id from the url
   const { id } = useParams();
   const [appointment, setAppointment] = useState(null);
-  const [completeModalVisible, setCompleteModalVisible] = useState(false);
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const [doctors, setDoctors] = useState([]);
   const [medicalTests, setMedicalTests] = useState([]);
 
   useEffect(() => {
@@ -25,6 +27,26 @@ export const StaffAppointmentDetail = () => {
   }, [id]);
 
   useEffect(() => {
+    // get the list of doctors from the database
+    const fetchDoctors = async () => {
+      const doctorsList = await appointmentApi.getDoctors();
+      setDoctors(doctorsList);
+    };
+    fetchDoctors();
+  }, []);
+
+  const handleUpdateAppointmentStatus = async (values) => {
+    // values: { id, status, doctorId }
+    // Gọi API cập nhật ở đây
+    try {
+      const response = await appointmentApi.updateAppointmentStatus(values);
+      setModalVisible(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating appointment status:", error);
+    }
+  };
+  useEffect(() => {
     if (appointment && appointment.id) {
       const fetchMedicalTests = async () => {
         const tests = await medicalTestApi.getMedicalTestByAppointmentId(
@@ -36,15 +58,6 @@ export const StaffAppointmentDetail = () => {
     }
   }, [appointment]);
 
-  const handleCompleteAppointment = async (values) => {
-    try {
-      await appointmentApi.completeAppointment(appointment.id, values); // Gọi API
-      setCompleteModalVisible(false);
-      window.location.reload(); // hoặc gọi lại fetchAppointment() nếu muốn mượt hơn
-    } catch (error) {
-      // Xử lý lỗi nếu cần
-    }
-  };
   return (
     <StaffLayout activeMenu="staff/appointment" pageTitle="Appointment Detail">
       {/* Content based on active tab */}
@@ -54,16 +67,17 @@ export const StaffAppointmentDetail = () => {
         </h2>
         <AppointmentInfo appointment={appointment} />
 
-        <Button type="primary" onClick={() => setCompleteModalVisible(true)}>
-          Hoàn thành khám bệnh
-        </Button>
+        {appointment && appointment.status !== "COMPLETED" && (
+          <Button type="primary" onClick={() => setModalVisible(true)}>
+            Cập nhật trạng thái
+          </Button>
+        )}
       </div>
 
       <div>
         <h2 className="font-bold text-xl mb-4 text-[#3B9AB8] flex items-center gap-2">
           Kết quả chẩn đoán
         </h2>
-        
 
         {medicalTests.length === 0 ? (
           <div>Không có xét nghiệm nào.</div>
@@ -75,6 +89,14 @@ export const StaffAppointmentDetail = () => {
           </div>
         )}
       </div>
+
+      <UpdateAppointmentStatusModal
+        visible={modalVisible}
+        onOk={handleUpdateAppointmentStatus}
+        onCancel={() => setModalVisible(false)}
+        appointment={appointment}
+        doctors={doctors}
+      />
     </StaffLayout>
   );
 };

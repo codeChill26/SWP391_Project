@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import { FaDiagnoses } from "react-icons/fa";
 import { AppointmentInfo } from "../../components/patients/AppointmentInfo";
+import { medicalTestApi } from "../../api/medicalTest-api";
   
 export const AppointmentDetail = () => {
   // get the booking id from the url
