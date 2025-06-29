@@ -11,6 +11,7 @@ import StaffLayout from "../../layout/StaffLayout";
 import { userApi } from "../../api/user-api";
 
 const statusTabs = [
+  { key: "ALL", label: "Tất cả" },
   { key: "PENDING", label: "Đang duyệt" },
   { key: "APPROVE", label: "Đã duyệt" },
   { key: "CANCEL", label: "Đã hủy" },

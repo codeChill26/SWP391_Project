@@ -29,6 +29,8 @@ import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminUsersManage } from "./pages/admin/AdminUsersManage";
 import { AdminDoctorsManage } from "./pages/admin/AdminDoctorsManage";
 import { AdminStaffManage } from "./pages/admin/AdminStaffManage";
+import { AdminService } from "./pages/admin/AdminService";
+import StaffCalendar from "./pages/staff/StaffCalendar";
 
 function App() {
   return (
@@ -57,10 +59,12 @@ function App() {
           <Route path="/staff/appointment" element={<StaffAppointment />} />
           <Route path="/staff/appointment/:id" element={<StaffAppointmentDetail />} />
           <Route path="/staff/profiles" element={<StaffProfile />} />
+          <Route path="/staff/calendar" element={<StaffCalendar />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsersManage />} />
           <Route path="/admin/doctors" element={<AdminDoctorsManage />} />
           <Route path="/admin/staffs" element={<AdminStaffManage />} />
+          <Route path="/admin/services" element={<AdminService />} />
         </Routes>
         <ToastContainer />
       </Router>

@@ -3,23 +3,33 @@ import MainLayout from '../../layout/MainLayout';
 import { useUser } from '../../context/UserContext';
 import { Calendar } from 'antd';
 import axios from 'axios';
-  import DoctorLayout from '../../layout/DoctorLayout';
-  import AppointmentDrawer from './Profile/AppointmentDrawer';
+import DoctorLayout from '../../layout/DoctorLayout';
+import StaffLayout from '../../layout/StaffLayout';
+import AppointmentDrawer from './Profile/AppointmentDrawer';
 
-const DoctorCalendar = () => {
+const statusTabs = [
+  { key: "ALL", label: "Tất cả" },
+  { key: "PENDING", label: "Đang duyệt" },
+  { key: "APPROVE", label: "Đã duyệt" },
+  { key: "CANCEL", label: "Đã hủy" },
+  { key: "COMPLETED", label: "Hoàn thành" },
+];
+
+const StaffCalendar = () => {
   const { userData } = useUser();
   const [appointments, setAppointments] = useState([]);
   const [serviceDetails, setServiceDetails] = useState({});
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedDateAppointments, setSelectedDateAppointments] = useState([]);
+  const [activeTab, setActiveTab] = useState("ALL");
 
   useEffect(() => {
     if (!userData.id) return;
     axios.get(`https://api-genderhealthcare.purintech.id.vn/api/appointments`)
       .then(async res => {
         const appts = res.data || [];
-        setAppointments(appts.filter(appt => appt.doctorId === userData.id));
+        setAppointments(appts);
         // Fetch service details for each appointment
         const serviceIds = appts.map(a => a.serviceId).filter(Boolean);
         const uniqueServiceIds = [...new Set(serviceIds)];
@@ -87,7 +97,7 @@ const DoctorCalendar = () => {
   };
 
   return (
-    <DoctorLayout activeMenu="doctor/calendar" displayName={userData.name || 'User'}>
+    <StaffLayout activeMenu="staff/calendar" displayName={userData.name || 'User'}>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 bg-white rounded-xl shadow p-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Calendar</h1>
         <Calendar 
@@ -104,8 +114,8 @@ const DoctorCalendar = () => {
         appointments={selectedDateAppointments}
         serviceDetails={serviceDetails}
       />
-    </DoctorLayout>
+    </StaffLayout>
   );
 };
 
-export default DoctorCalendar;
+export default StaffCalendar;

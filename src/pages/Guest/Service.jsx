@@ -56,7 +56,7 @@ const Service = () => {
         appointmentTime: appointmentTime,
         paymentMethod: 'pending'
       };
-      //const response = await appointmentApi.scheduleAppointment(data);
+      const response = await appointmentApi.scheduleAppointment(data);
       //console.log("schedule data", response)
       message.success('Đặt lịch thành công!');
       setModalOpen(false);

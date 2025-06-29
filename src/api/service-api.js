@@ -42,5 +42,14 @@ export const serviceApi = {
     const response = await axios.put(`https://api-genderhealthcare.purintech.id.vn/api/services/${id}`, data, config);
     return response.data;
   },
+  deleteService: async (id) => {
+    const token = localStorage.getItem("token")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+    const response = await axios.delete(`https://api-genderhealthcare.purintech.id.vn/api/services/${id}`, config);
+    return response.data;
+  }
 }
-

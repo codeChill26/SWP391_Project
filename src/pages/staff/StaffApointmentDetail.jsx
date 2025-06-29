@@ -34,6 +34,7 @@ export const StaffAppointmentDetail = () => {
     };
     fetchDoctors();
   }, []);
+  console.log("Fetch appointment for staff", appointment);
 
   const handleUpdateAppointmentStatus = async (values) => {
     // values: { id, status, doctorId }

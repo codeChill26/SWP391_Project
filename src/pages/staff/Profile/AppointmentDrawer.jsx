@@ -11,7 +11,7 @@ const AppointmentDrawer = ({
   onClose, 
   selectedDate, 
   appointments, 
-  serviceDetails,
+  serviceDetails
 }) => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -64,11 +64,9 @@ const AppointmentDrawer = ({
           dataSource={sortedAppointments}
           renderItem={(appointment) => {
             const service = appointment.serviceId ? serviceDetails[appointment.serviceId] : null;
-            const patient = users && appointment.userId ? users.find(u => u.id === appointment.userId) : null;
-            const doctor = users && appointment.doctorId ? users.find(u => u.id === appointment.doctorId) : null;
             return (
               <List.Item>
-                <div className="w-full" onClick={() => navigate(`/doctor/appointment/${appointment.id}`)}>
+                <div className="w-full" onClick={() => navigate(`/staff/appointment/${appointment.id}`)}>
                   <div className="flex justify-between items-start mb-2">
                     <Title level={5} style={{ margin: 0 }}>
                       {service ? service.name : 'Loading...'}
@@ -79,15 +77,29 @@ const AppointmentDrawer = ({
                   </div>
                   <Space direction="vertical" size="small" className="w-full">
                     {/* Thông tin bệnh nhân */}
-                    {patient && (
+                    {users && (
                       <Text type="secondary">
-                        Bệnh nhân: {patient.name || patient.fullname} ({patient.email || 'N/A'})
+                        Bệnh nhân: {
+                          (() => {
+                            const patient = users.find(u => u.id === appointment.userId);
+                            return patient
+                              ? `${patient.name || patient.fullname} (${patient.email || "N/A"})`
+                              : "Không rõ";
+                          })()
+                        }
                       </Text>
                     )}
                     {/* Thông tin bác sĩ */}
-                    {doctor && (
+                    {users && appointment.doctorId && (
                       <Text type="secondary">
-                        Bác sĩ: {doctor.name || doctor.fullname} ({doctor.email || 'N/A'})
+                        Bác sĩ: {
+                          (() => {
+                            const doctor = users.find(u => u.id === appointment.doctorId);
+                            return doctor
+                              ? `${doctor.name || doctor.fullname} (${doctor.email || "N/A"})`
+                              : "Không rõ";
+                          })()
+                        }
                       </Text>
                     )}
                     <Text type="secondary">
