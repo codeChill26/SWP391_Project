@@ -30,11 +30,11 @@ const sidebarMenu = [
     icon: <AiOutlineCalendar size={22} />,
     key: "staff/appointment",
   },
-  { label: "Services", icon: <FaSyringe size={22} />, key: "services" },
+  { label: "Services", icon: <FaSyringe size={22} />, key: "staff/services" },
   {
-    label: "Patient Profiles",
+    label: "Profiles",
     icon: <AiOutlineUser size={22} />,
-    key: "staff/patient-profiles",
+    key: "staff/profiles",
   },
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];

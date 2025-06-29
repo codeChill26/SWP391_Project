@@ -10,6 +10,7 @@ import { appointmentApi } from "../../api/appointment-api";
 import { userApi } from "../../api/user-api";
 import { useUser } from "../../context/UserContext";
 import { serviceApi } from "../../api/service-api";
+import dayjs from "dayjs";
 
 const statusTabs = [
   { key: "ALL", label: "Tất cả" },
@@ -35,11 +36,8 @@ const getStatusColor = (status) => {
 };
 
 const formatTime = (timeString) => {
-  const date = new Date(timeString);
-  return date.toLocaleString("vi-VN", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  if (!timeString) return "N/A";
+  return dayjs(timeString).format("DD/MM/YYYY HH:mm");
 };
 
 export const DoctorAppointment = () => {

@@ -17,7 +17,7 @@ const sidebarMenu = [
   { label: "Calendar", icon: <AiOutlineCalendar size={22} />, key: "doctor/calendar" },
   { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "doctor/appointment" },
   { label: "Services", icon: <FaSyringe size={22} />, key: "doctor/services" },  
-  { label: "Patient Profiles", icon: <AiOutlineUser size={22} />, key: "doctor/patient-profiles" },
+  { label: "Profiles", icon: <AiOutlineUser size={22} />, key: "doctor/profiles" },
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];
 

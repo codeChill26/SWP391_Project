@@ -2,9 +2,45 @@ import axios from "axios";
 
 export const serviceApi = {
   getServices: async () => {
-    const response = await axios.get("https://api-genderhealthcare.purintech.id.vn/api/services");
+    const token = localStorage.getItem("token")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+    const response = await axios.get("https://api-genderhealthcare.purintech.id.vn/api/services", config);
 
     return response.data;
-  }
+  },
+  getServiceById: async (id) => {
+    const token = localStorage.getItem("token")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+    const response = await axios.get(`https://api-genderhealthcare.purintech.id.vn/api/services/${id}`, config);
+    return response.data;
+  },
+  createService: async (data) => {
+    const token = localStorage.getItem("token")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+    const response = await axios.post("https://api-genderhealthcare.purintech.id.vn/api/services", data, config);
+    return response.data;
+  },
+  updateService: async (id, data) => {
+    const token = localStorage.getItem("token")
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+    const response = await axios.put(`https://api-genderhealthcare.purintech.id.vn/api/services/${id}`, data, config);
+    return response.data;
+  },
 }
 

@@ -28,7 +28,7 @@ const Login = () => {
           
           
           if (userData.role === 'admin') {
-            navigate('/admin');
+            navigate('/admin/dashboard');
           } else if (userData.role === 'patient') {
             navigate('/');
           } 

@@ -5,6 +5,9 @@ import { Button, Modal, DatePicker, TimePicker, Radio, Input, message } from 'an
 import axios from 'axios';
 import moment from 'moment';
 import { appointmentApi } from '../../api/appointment-api';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 const Service = () => {
   const [services, setServices] = useState([]);
@@ -39,27 +42,30 @@ const Service = () => {
     }
     try {
       const userId = Number(localStorage.getItem('id'));
-      const appointmentTime = moment(date).startOf('day').toISOString();
-      console.log("appointmentTime", appointmentTime)
+      const appointmentTime = dayjs(date).startOf('day').utc().add(7, 'hours').toISOString();
+      
+      console.log(typeof date);
       console.log("date", date)
+      console.log("appointmentTime", appointmentTime)
 
       const data = {
         service_id: selectedService.id,
         userId: userId,
         specialization: 'ANDROLOGY', // TODO: Chuyên khoa nam khoa (ANDROLOGY), nữ khoa GYNECOLOGY
-        notes: notes || '',
+        patientNotes: notes || '',
         appointmentTime: appointmentTime,
         paymentMethod: 'pending'
       };
-      const response = await appointmentApi.scheduleAppointment(data);
-      console.log("schedule data", response)
+      //const response = await appointmentApi.scheduleAppointment(data);
+      //console.log("schedule data", response)
       message.success('Đặt lịch thành công!');
       setModalOpen(false);
       setSelectedService(null);
       setDate(null);
       setNotes('');
-    } catch {
+    } catch (error) {
       message.error('Đặt lịch thất bại!');
+      console.log("error", error)
     
     }
   };

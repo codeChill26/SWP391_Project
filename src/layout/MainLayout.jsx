@@ -20,8 +20,8 @@ const sidebarMenu = [
   { label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "dashboard" },
   { label: "Calendar", icon: <AiOutlineCalendar size={22} />, key: "calendar" },
   { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "appointment" },
-  { label: "Profile", icon: <AiOutlineUser size={22} />, key: "profile" },
   { label: "Services", icon: <FaSyringe size={22} />, key: "services" },  
+  { label: "Profile", icon: <AiOutlineUser size={22} />, key: "profile" },
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];
 

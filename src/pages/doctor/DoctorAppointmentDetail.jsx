@@ -77,6 +77,7 @@ export const DoctorAppointmentDetail = () => {
     }
   };
 
+
   return (
     <DoctorLayout activeMenu="staff/appointment" pageTitle="Appointment Detail">
       {/* Content based on active tab */}
@@ -86,16 +87,18 @@ export const DoctorAppointmentDetail = () => {
         </h2>
         <AppointmentInfo appointment={appointment} />
 
-        <Button type="primary" onClick={() => setModalVisible(true)}>
-          Hoàn thành khám bệnh
-        </Button>
+        {appointment && appointment.status === "APPROVE" && (
+          <Button type="primary" onClick={() => setModalVisible(true)}>
+            Hoàn thành khám bệnh
+          </Button>
+        )}
       </div>
 
       <div>
         <h2 className="font-bold text-xl mb-4 text-[#3B9AB8] flex items-center gap-2">
           Kết quả chẩn đoán
         </h2>
-        {appointment && appointment.status !== "COMPLETED" && (
+        {appointment && appointment.status == "APPROVE" && (
           <Button
             type="dashed"
             onClick={() => setCreateModalVisible(true)}

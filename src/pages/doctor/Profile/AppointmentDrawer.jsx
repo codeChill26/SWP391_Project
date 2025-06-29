@@ -57,7 +57,7 @@ const AppointmentDrawer = ({
             const service = appointment.serviceId ? serviceDetails[appointment.serviceId] : null;
             return (
               <List.Item>
-                <div className="w-full" onClick={() => navigate(`/doctor/appointment/${appointment.id}`)}>
+                <div className="w-full" onClick={() => navigate(`/appointment/${appointment.id}`)}>
                   <div className="flex justify-between items-start mb-2">
                     <Title level={5} style={{ margin: 0 }}>
                       {service ? service.name : 'Loading...'}
