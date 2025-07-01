@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../../context/UserContext';
 
 const Admin = () => {
   const [users, setUsers] = useState([]);

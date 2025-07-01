@@ -11,24 +11,19 @@ import {
 import { FaUserCircle, FaBell, FaChevronDown, FaSyringe } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import { DateRangeTwoTone } from "@mui/icons-material";
-import { getRoleLabel } from "../utils/getRoleLabel";
-import { Tag } from "antd";
 
 const sidebarMenu = [
-  { label: "Home", icon: <AiOutlineHome size={22} />, key: "" },
-  { label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "dashboard" },
-  { label: "Calendar", icon: <AiOutlineCalendar size={22} />, key: "calendar" },
-  { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "appointment" },
-  { label: "Services", icon: <FaSyringe size={22} />, key: "services" },  
-  { label: "Profile", icon: <AiOutlineUser size={22} />, key: "profile" },
+  { label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "admin/dashboard" },
+  { label: "User", icon: <FaUserCircle size={22} />, key: "admin/users" },  
+  { label: "Doctor", icon: <FaUserCircle size={22} />, key: "admin/doctors" },  
+  { label: "Staff", icon: <FaUserCircle size={22} />, key: "admin/staffs" },  
+  { label: "Services", icon: <FaSyringe size={22} />, key: "admin/services" },  
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];
 
-
-const MainLayout = ({ children, activeMenu }) => {
+const AdminLayout = ({ children, activeMenu, displayName }) => {
   const navigate = useNavigate();
-  const { userData, logout } = useUser();
+  const { logout } = useUser();
 
   // Lấy tên người dùng trực tiếp từ localStorage
   const name = localStorage.getItem('name') || 'User';
@@ -80,10 +75,7 @@ const MainLayout = ({ children, activeMenu }) => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="text-gray-500 text-lg">Hi, {name}</div>
-              <Tag>
-                {getRoleLabel(userData.role)}
-                </Tag>
-              <div className="text-2xl font-bold capitalize">{activeMenu}</div>
+              <div className="text-2xl font-bold capitalize">{displayName}</div>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-gray-500">EN <FaChevronDown className="inline ml-1" /></span>
@@ -105,4 +97,4 @@ const MainLayout = ({ children, activeMenu }) => {
   );
 };
 
-export default MainLayout;
+export default AdminLayout;

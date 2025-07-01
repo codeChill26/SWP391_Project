@@ -1,3 +1,4 @@
+<<<<<<< HEAD:src/pages/Service.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaClock, FaDollarSign, FaChevronRight } from "react-icons/fa";
@@ -95,26 +96,32 @@ const allServices = [
     image: "/src/assets/images/service1.png",
   },
 ];
+=======
+import React, { useEffect, useState } from 'react';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
+import { Button, Modal, DatePicker, TimePicker, Radio, Input, message } from 'antd';
+import axios from 'axios';
+import moment from 'moment';
+import { appointmentApi } from '../../api/appointment-api';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+>>>>>>> main:src/pages/Guest/Service.jsx
 
 const Service = () => {
   const [services, setServices] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [date, setDate] = useState(null);
-  const [time, setTime] = useState(null);
-  const [payment, setPayment] = useState('cash');
   const [notes, setNotes] = useState('');
-  const [conclusion, setConclusion] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  
 
   useEffect(() => {
     axios.get('https://api-genderhealthcare.purintech.id.vn/api/services')
       .then(res => setServices(res.data))
       .catch(() => setServices([]));
   }, []);
-
-  const userId = Number(localStorage.getItem('userId'));
 
   const showBookingModal = (service) => {
     setSelectedService(service);
@@ -125,6 +132,7 @@ const Service = () => {
     setModalOpen(false);
     setSelectedService(null);
     setDate(null);
+    setNotes('');
   };
 
   const handleBooking = async () => {
@@ -133,25 +141,32 @@ const Service = () => {
       return;
     }
     try {
-      const userId = Number(localStorage.getItem('userId'));
-      const appointmentTime = moment(date).startOf('day').toISOString();
+      const userId = Number(localStorage.getItem('id'));
+      const appointmentTime = dayjs(date).startOf('day').utc().add(7, 'hours').toISOString();
+      
+      console.log(typeof date);
+      console.log("date", date)
+      console.log("appointmentTime", appointmentTime)
+
       const data = {
-        user_id: userId,
         service_id: selectedService.id,
-        appointment_time: appointmentTime,
-        specialization: 'General',
-        status: 'pending',
-        notes: 'nothing',
-        conclusion: null,
-        payment_status: 'pending'
+        userId: userId,
+        specialization: 'ANDROLOGY', // TODO: Chuyên khoa nam khoa (ANDROLOGY), nữ khoa GYNECOLOGY
+        patientNotes: notes || '',
+        appointmentTime: appointmentTime,
+        paymentMethod: 'pending'
       };
-      await axios.post('https://api-genderhealthcare.purintech.id.vn/api/appointments/schedule', data);
+      const response = await appointmentApi.scheduleAppointment(data);
+      //console.log("schedule data", response)
       message.success('Đặt lịch thành công!');
       setModalOpen(false);
       setSelectedService(null);
       setDate(null);
-    } catch (err) {
+      setNotes('');
+    } catch (error) {
       message.error('Đặt lịch thất bại!');
+      console.log("error", error)
+    
     }
   };
 
@@ -209,6 +224,14 @@ const Service = () => {
             value={date}
             onChange={setDate}
             disabledDate={d => d && d < new Date()}
+          />
+        </div>
+        <div className="mb-4">
+          <label>Nêu tình trạng (Nếu có):</label>
+          <Input 
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Nhập tình trạng của bạn..."
           />
         </div>
         <div className="flex justify-end">

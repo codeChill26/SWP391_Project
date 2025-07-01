@@ -33,9 +33,9 @@ export default function Navbar() {
       label: "Blog",
     },
     {
-      key: "/help",
-      icon: <QuestionCircleOutlined style={{ fontSize: '18px', color: '#fff' }} />,
-      label: "Help Center",
+      key: "/calendar",
+      icon: <CalendarOutlined style={{ fontSize: '18px', color: '#fff' }} />,
+      label: "Appointments",
     },
     {
       key: "/about",

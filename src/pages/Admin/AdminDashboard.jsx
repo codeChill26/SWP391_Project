@@ -1,9 +1,13 @@
-import React from "react";
+
+import { FaSearch } from "react-icons/fa";
+import { FaChevronRight } from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
+import { FaDollarSign } from "react-icons/fa";
+import { FaClock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { FaSearch, FaMapMarkerAlt, FaCalendarAlt, FaChevronLeft, FaChevronRight, FaChevronUp, FaClock, FaDollarSign } from "react-icons/fa";
-import MainLayout from "../layout/MainLayout";
-import { useUser } from "../context/UserContext";
-import { Calendar } from 'antd';
+import { useUser } from "../../context/UserContext";
+import { useState } from "react";
+import AdminLayout from "../../layout/AdminLayout";
 
 const services = [
   {
@@ -35,24 +39,16 @@ const services = [
   },
 ];
 
-const Dashboard = () => {
+export const AdminDashboard = () => {
   const navigate = useNavigate();
   const { userData } = useUser();
-
-  // Dummy data for upcoming appointments (June 2023)
-  const daysInMonth = Array.from({ length: 30 }, (_, i) => i + 1);
-  const currentMonth = "June 2023";
-  const appointments = [14, 22, 29]; // Example days with appointments
-
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [serviceDetails, setServiceDetails] = useState({});
   return (
-    <MainLayout activeMenu="dashboard" displayName={userData.name || 'User'}>
+    <AdminLayout activeMenu="admin/dashboard">
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <div className="mb-8">
-          <h1 className="text-gray-500 text-lg">Hi, {userData.name || 'User'}</h1>
-          <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
-        </div>
-
         {/* Search Bar Section */}
         <div className="bg-white rounded-xl shadow p-4 flex items-center justify-between mb-8">
           <div className="flex items-center flex-grow">
@@ -71,7 +67,7 @@ const Dashboard = () => {
         {/* Main Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Banner */}
-          <div className="lg:col-span-2 bg-blue-100 rounded-xl overflow-hidden shadow relative flex items-center p-8"
+          {/* <div className="lg:col-span-2 bg-blue-100 rounded-xl overflow-hidden shadow relative flex items-center p-8"
             style={{ backgroundImage: 'url(/src/assets/images/doctors_banner.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="relative z-10 text-white p-6">
               <h3 className="text-3xl font-bold mb-2">No need to visit local hospitals</h3>
@@ -86,42 +82,109 @@ const Dashboard = () => {
                 <span className="text-sm font-medium">+180 doctors are online</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Right Column: Upcoming Appointments */}
-          <div className="lg:col-span-1 bg-white rounded-xl shadow p-6">
+          <div className="col-span-3 bg-white rounded-xl shadow p-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-gray-800">Upcoming Appointments</h3>
-              <button onClick={() => navigate('/calendar')} className="text-blue-500 text-sm font-medium flex items-center">
+              <h3 className="text-xl font-semibold text-gray-800">
+                Upcoming Appointments
+              </h3>
+              <button
+                onClick={() => navigate("/calendar")}
+                className="text-blue-500 text-sm font-medium flex items-center"
+              >
                 View All <FaChevronRight className="ml-1 text-xs" />
               </button>
             </div>
-            {/* Calendar UI */}
-            <Calendar fullscreen={false} />
-            <div className="text-center text-gray-500 mt-8">
-              <FaCalendarAlt className="text-4xl mx-auto mb-2 text-gray-300" />
-              <p>No upcoming appointments</p>
-            </div>
+            {/* Mini Appointment List */}
+            {loading ? (
+              <div className="text-center py-8 text-gray-400">Loading...</div>
+            ) : error ? (
+              <div className="text-center py-8 text-red-400">{error}</div>
+            ) : appointments.length === 0 ? (
+              <div className="text-center text-gray-500 mt-8">
+                <FaCalendarAlt className="text-4xl mx-auto mb-2 text-gray-300" />
+                <p>No upcoming appointments</p>
+              </div>
+            ) : (
+              <div className="space-y-4 max-h-[350px] overflow-y-auto">
+                {appointments.slice(0, 5).map((appt) => {
+                  const service = appt.serviceId
+                    ? serviceDetails[appt.serviceId]
+                    : null;
+                  const dateObj = appt.appointmentTime
+                    ? new Date(appt.appointmentTime)
+                    : null;
+                  const day = dateObj
+                    ? dateObj.toLocaleDateString("en-US", { weekday: "short" })
+                    : "";
+                  const date = dateObj ? dateObj.getDate() : "";
+                  const month = dateObj
+                    ? dateObj.toLocaleDateString("en-US", { month: "short" })
+                    : "";
+                  const time = dateObj
+                    ? dateObj.toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })
+                    : "";
+                  return (
+                    <div
+                      key={appt.id}
+                      className="flex flex-col bg-blue-50 rounded-lg p-3 shadow-sm border border-blue-100"
+                    >
+                      <div className="font-bold text-lg text-gray-900">
+                        {day} {date} {month}
+                      </div>
+                      <div className="text-md text-gray-700 mb-1">{time}</div>
+                      <div className="text-sm text-blue-900 font-semibold">
+                        {service ? service.name : "Loading..."}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Recommended Service Section */}
         <div className="mt-12">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Recommended Service</h2>
-            <button onClick={() => navigate('/service')} className="text-blue-500 font-medium flex items-center">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Recommended Service
+            </h2>
+            <button
+              onClick={() => navigate("/service")}
+              className="text-blue-500 font-medium flex items-center"
+            >
               View All <FaChevronRight className="ml-1 text-sm" />
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map(service => (
-              <div key={service.id} className="bg-white rounded-xl shadow p-6 border border-gray-100 flex flex-col items-center text-center">
-                <img src={service.image} alt={service.name} className="w-24 h-24 rounded-full object-cover mb-4" />
-                <h3 className="text-lg font-semibold text-gray-800 mb-1">{service.name}</h3>
-                <p className="text-gray-600 text-sm">{service.specialty} | {service.yearsExperience} experience</p>
+            {services.map((service) => (
+              <div
+                key={service.id}
+                className="bg-white rounded-xl shadow p-6 border border-gray-100 flex flex-col items-center text-center"
+              >
+                <img
+                  src={service.image}
+                  alt={service.name}
+                  className="w-24 h-24 rounded-full object-cover mb-4"
+                />
+                <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                  {service.name}
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  {service.specialty} | {service.yearsExperience} experience
+                </p>
                 <div className="flex justify-center my-3">
-                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{service.specialty}</span>
+                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    {service.specialty}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between w-full mt-auto pt-4 border-t border-gray-200">
                   <div className="flex items-center text-gray-600">
@@ -139,8 +202,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </MainLayout>
+    </AdminLayout>
   );
 };
-
-export default Dashboard;

@@ -4,7 +4,7 @@ import { UserOutlined, LockOutlined, CloseOutlined, InfoCircleOutlined } from '@
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { jwtDecode } from 'jwt-decode';
+import { useUser } from '../../context/UserContext';
 
 
 
@@ -12,8 +12,10 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [form] = Form.useForm();
+  const { login } = useUser();
   const navigate = useNavigate();
 
+<<<<<<< HEAD:src/pages/Login.jsx
   const onFinish = async (values) => {
     setLoading(true);
     setLoginError('');
@@ -38,6 +40,42 @@ const Login = () => {
         const errorMsg = response.data.message || 'Sai tên đăng nhập hoặc mật khẩu!';
         setLoginError(errorMsg);
         toast.error(errorMsg);
+=======
+    const onFinish = async (values) => {
+      setLoading(true);
+      setLoginError('');
+      
+      try {
+        const userData = await login(values.email,values.password)
+        
+        if (userData.success) {
+        
+          toast.success('Đăng nhập thành công!');
+          
+          
+          if (userData.role === 'admin') {
+            navigate('/admin/dashboard');
+          } else if (userData.role === 'patient') {
+            navigate('/');
+          } 
+          else if (userData.role === 'doctor') {
+            navigate('/doctor/dashboard');
+          } 
+          else if (userData.role === 'staff') {
+            navigate('/staff/dashboard');
+          } else {
+            navigate('/');
+          }
+        } else {
+          setLoginError(userData.message || 'Đăng nhập thất bại!');
+          toast.error(userData.message || 'Đăng nhập thất bại!');
+        }
+      } catch{
+        setLoginError('Lỗi kết nối. Vui lòng thử lại.');
+        toast.error('Lỗi kết nối. Vui lòng thử lại.');
+      } finally {
+        setLoading(false);
+>>>>>>> main:src/pages/Guest/Login.jsx
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Lỗi kết nối. Vui lòng thử lại.';
