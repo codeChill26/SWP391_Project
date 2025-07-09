@@ -15,11 +15,11 @@ import { getRoleLabel } from "../utils/getRoleLabel";
 import { Tag } from "antd";
 
 const sidebarMenu = [
-  {
-    label: "Dashboard",
-    icon: <AiOutlineAppstore size={22} />,
-    key: "staff/dashboard",
-  },
+  // {
+  //   label: "Dashboard",
+  //   icon: <AiOutlineAppstore size={22} />,
+  //   key: "staff/dashboard",
+  // },
   {
     label: "Calendar",
     icon: <AiOutlineCalendar size={22} />,
@@ -30,7 +30,7 @@ const sidebarMenu = [
     icon: <AiOutlineCalendar size={22} />,
     key: "staff/appointment",
   },
-  { label: "Services", icon: <FaSyringe size={22} />, key: "staff/services" },
+  // { label: "Services", icon: <FaSyringe size={22} />, key: "staff/services" },
   {
     label: "Profiles",
     icon: <AiOutlineUser size={22} />,

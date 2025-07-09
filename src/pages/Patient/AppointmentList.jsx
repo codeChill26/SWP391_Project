@@ -3,7 +3,8 @@ import { UserLayout } from "../../layout/userLayout";
 import MainLayout from "../../layout/MainLayout";
 import { appointmentApi } from "../../api/appointment-api";
 import { useUser } from "../../context/UserContext";
-import { List, Tag, Space, Typography, Tabs } from "antd";
+import { List, Tag, Space, Typography, Tabs, Select } from "antd";
+import { ClockCircleOutlined } from "@ant-design/icons";
 import { serviceApi } from "../../api/service-api";
 import { useNavigate } from "react-router-dom";
 import { getStatusColor, getStatusLabel } from "../../utils/statusColor";
@@ -45,6 +46,12 @@ const AppointmentList = () => {
   const { userData, loading } = useUser();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("PENDING");
+  const [sortOrder, setSortOrder] = useState("asc"); // "asc" hoặc "desc"
+  
+  const sortOptions = [
+    { value: "asc", label: "Cũ nhất trước" },
+    { value: "desc", label: "Mới nhất trước" },
+  ];
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -71,19 +78,37 @@ const AppointmentList = () => {
 
   const filteredAppointments = appointments
     .filter(app => app.status === activeTab)
-    .sort((a, b) => new Date(b.appointmentTime) - new Date(a.appointmentTime));
+    .sort((a, b) => {
+      const dateA = new Date(a.appointmentTime);
+      const dateB = new Date(b.appointmentTime);
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+    });
+
+  const handleSortChange = (value) => {
+    setSortOrder(value);
+  };
 
   return (
     <MainLayout activeMenu="appointment">
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        className="mb-6"
-      >
-        {statusTabs.map(tab => (
-          <TabPane tab={tab.label} key={tab.key} />
-        ))}
-      </Tabs>
+      <div className="flex justify-between items-center mb-4">
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          className="flex-1"
+        >
+          {statusTabs.map(tab => (
+            <TabPane tab={tab.label} key={tab.key} />
+          ))}
+        </Tabs>
+        <Select
+          value={sortOrder}
+          onChange={handleSortChange}
+          options={sortOptions}
+          style={{ width: 150 }}
+          prefix={<ClockCircleOutlined />}
+          placeholder="Sắp xếp theo thời gian"
+        />
+      </div>
 
       {filteredAppointments.length === 0 ? (
         <Text type="secondary">Không có lịch hẹn nào</Text>

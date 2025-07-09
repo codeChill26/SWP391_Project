@@ -19,11 +19,11 @@ const DoctorAppointmentCard = ({ appointment }) => {
           <div className="text-sm mt-1">
             <span
               className={
-                appointment.status === "Upcoming"
+                appointment.status.toLowerCase() === "upcoming"
                   ? "text-blue-600"
-                  : appointment.status === "Cancelled"
+                  : appointment.status.toLowerCase() === "cancelled"
                   ? "text-red-500"
-                  : appointment.status === "Past"
+                  : appointment.status.toLowerCase() === "past"
                   ? "text-gray-400"
                   : "text-green-600"
               }

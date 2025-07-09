@@ -16,30 +16,33 @@ export default function Navbar() {
     navigate('/');
   };
 
+  // Tạo menuItems động dựa vào trạng thái đăng nhập
   const menuItems = [
     {
       key: "/",
-      icon: <HomeOutlined style={{ fontSize: '18px', color: '#fff' }} />,
+      icon: <HomeOutlined style={{ fontSize: '18px', color: '#fff' }} />, 
       label: "Home",
     },
     {
       key: "/service",
-      icon: <AppstoreOutlined style={{ fontSize: '18px', color: '#fff' }} />,
+      icon: <AppstoreOutlined style={{ fontSize: '18px', color: '#fff' }} />, 
       label: "Services",
     },
     {
       key: "/blog",
-      icon: <FileTextOutlined style={{ fontSize: '18px', color: '#fff' }} />,
+      icon: <FileTextOutlined style={{ fontSize: '18px', color: '#fff' }} />, 
       label: "Blog",
     },
-    {
-      key: "/calendar",
-      icon: <CalendarOutlined style={{ fontSize: '18px', color: '#fff' }} />,
-      label: "Appointments",
-    },
+    ...(userData && userData.id
+      ? [{
+          key: "/calendar",
+          icon: <CalendarOutlined style={{ fontSize: '18px', color: '#fff' }} />,
+          label: "Appointments",
+        }]
+      : []),
     {
       key: "/about",
-      icon: <InfoCircleOutlined style={{ fontSize: '18px', color: '#fff' }} />,
+      icon: <InfoCircleOutlined style={{ fontSize: '18px', color: '#fff' }} />, 
       label: "About",
     },
   ];

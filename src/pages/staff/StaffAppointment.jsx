@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { appointmentApi } from "../../api/appointment-api";
 import { serviceApi } from "../../api/service-api";
 import MainLayout from "../../layout/MainLayout";
-import { List, Space, Tabs, Tag, Typography } from "antd";
+import { List, Space, Tabs, Tag, Typography, Select } from "antd";
+import { ClockCircleOutlined } from "@ant-design/icons";
 const { Text, Title } = Typography;
 import TabPane from "antd/es/tabs/TabPane";
 import StaffLayout from "../../layout/StaffLayout";
@@ -14,7 +15,7 @@ const statusTabs = [
   { key: "ALL", label: "Tất cả" },
   { key: "PENDING", label: "Đang duyệt" },
   { key: "APPROVE", label: "Đã duyệt" },
-  { key: "CANCEL", label: "Đã hủy" },
+  { key: "CANCELLED", label: "Đã hủy" },
   { key: "COMPLETED", label: "Hoàn thành" },
 ];
 
@@ -46,6 +47,12 @@ export const StaffAppointment = () => {
   const [services, setServices] = useState([]);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("PENDING");
+  const [sortOrder, setSortOrder] = useState("asc"); // "asc" hoặc "desc"
+  
+  const sortOptions = [
+    { value: "asc", label: "Cũ nhất trước" },
+    { value: "desc", label: "Mới nhất trước" },
+  ];
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -72,18 +79,36 @@ export const StaffAppointment = () => {
     fetchUsers();
   }, []);
 
-  const filteredAppointments =
-    activeTab === "ALL"
-      ? appointments
-      : appointments.filter((app) => app.status === activeTab);
+  const handleSortChange = (value) => {
+    setSortOrder(value);
+  };
+
+  const filteredAppointments = (activeTab === "ALL"
+    ? appointments
+    : appointments.filter((app) => app.status === activeTab)
+  ).sort((a, b) => {
+    const dateA = new Date(a.appointmentTime);
+    const dateB = new Date(b.appointmentTime);
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  });
 
   return (
     <StaffLayout activeMenu="staff/appointment" pageTitle="Appointment List">
-      <Tabs activeKey={activeTab} onChange={setActiveTab} className="mb-6">
-        {statusTabs.map((tab) => (
-          <TabPane tab={tab.label} key={tab.key} />
-        ))}
-      </Tabs>
+      <div className="flex justify-between items-center mb-4">
+        <Tabs activeKey={activeTab} onChange={setActiveTab} className="flex-1">
+          {statusTabs.map((tab) => (
+            <TabPane tab={tab.label} key={tab.key} />
+          ))}
+        </Tabs>
+        <Select
+          value={sortOrder}
+          onChange={handleSortChange}
+          options={sortOptions}
+          style={{ width: 150 }}
+          prefix={<ClockCircleOutlined />}
+          placeholder="Sắp xếp theo thời gian"
+        />
+      </div>
 
       {filteredAppointments.length === 0 ? (
         <Text type="secondary">Không có lịch hẹn nào</Text>

@@ -13,10 +13,10 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 
 const sidebarMenu = [
-  { label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "doctor/dashboard" },
+  //{ label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "doctor/dashboard" },
   { label: "Calendar", icon: <AiOutlineCalendar size={22} />, key: "doctor/calendar" },
   { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "doctor/appointment" },
-  { label: "Services", icon: <FaSyringe size={22} />, key: "doctor/services" },  
+  //{ label: "Services", icon: <FaSyringe size={22} />, key: "doctor/services" },  
   { label: "Profiles", icon: <AiOutlineUser size={22} />, key: "doctor/profiles" },
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];

@@ -28,15 +28,15 @@ const Login = () => {
           
           
           if (userData.role === 'admin') {
-            navigate('/admin/dashboard');
+            navigate('/admin/calendar');
           } else if (userData.role === 'patient') {
             navigate('/');
           } 
           else if (userData.role === 'doctor') {
-            navigate('/doctor/dashboard');
+            navigate('/doctor/calendar');
           } 
           else if (userData.role === 'staff') {
-            navigate('/staff/dashboard');
+            navigate('/staff/calendar');
           } else {
             navigate('/');
           }

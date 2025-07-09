@@ -15,16 +15,6 @@ import { DateRangeTwoTone } from "@mui/icons-material";
 import { getRoleLabel } from "../utils/getRoleLabel";
 import { Tag } from "antd";
 
-const sidebarMenu = [
-  { label: "Home", icon: <AiOutlineHome size={22} />, key: "" },
-  { label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "dashboard" },
-  { label: "Calendar", icon: <AiOutlineCalendar size={22} />, key: "calendar" },
-  { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "appointment" },
-  { label: "Services", icon: <FaSyringe size={22} />, key: "services" },  
-  { label: "Profile", icon: <AiOutlineUser size={22} />, key: "profile" },
-  { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
-];
-
 
 const MainLayout = ({ children, activeMenu }) => {
   const navigate = useNavigate();
@@ -32,6 +22,19 @@ const MainLayout = ({ children, activeMenu }) => {
 
   // Lấy tên người dùng trực tiếp từ localStorage
   const name = localStorage.getItem('name') || 'User';
+
+  // Tạo sidebarMenu động dựa vào trạng thái đăng nhập
+  const sidebarMenu = [
+    { label: "Home", icon: <AiOutlineHome size={22} />, key: "" },
+    //{ label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "dashboard" },
+    { label: "Calendar", icon: <AiOutlineCalendar size={22} />, key: "calendar" },
+    ...(userData && userData.id
+      ? [{ label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "appointment" }]
+      : []),
+    { label: "Services", icon: <FaSyringe size={22} />, key: "services" },  
+    { label: "Profile", icon: <AiOutlineUser size={22} />, key: "profile" },
+    { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
+  ];
 
   const handleMenuClick = (key) => {
     if (key === 'logout') {
