@@ -100,7 +100,7 @@ export const PeriodTracking = () => {
       periodRecords.length;
 
     // Lấy kỳ kinh gần nhất
-    const lastRecord = periodRecords[periodRecords.length - 1];
+    const lastRecord = periodRecords[0];
     const lastStartDate = dayjs(lastRecord.recordDate);
     const nextPeriodDate = lastStartDate.add(lastRecord.cycleLength, "day");
     const daysUntilNext = nextPeriodDate.diff(dayjs(), "day");
@@ -418,7 +418,7 @@ export const PeriodTracking = () => {
                   // }
                 >
                   <div className="space-y-4">
-                    {chartData.map((data, index) => (
+                    {chartData.slice(0, 4).map((data, index) => (
                       <div key={index} className="border-b pb-2">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-sm font-medium">
