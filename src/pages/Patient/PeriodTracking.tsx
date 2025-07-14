@@ -58,46 +58,19 @@ export const PeriodTracking = () => {
       };
       fetchHealthCycles();
     }
-    // Simulate loading data - dữ liệu 3 tháng gần nhất từ 14/07/2025
-    // const mockData = [
-    //   {
-    //     id: 1,
-    //     startDate: "2025-05-20",
-    //     endDate: "2025-05-25",
-    //     cycleLength: 28,
-    //     periodLength: 5,
-    //     notes: "Kỳ kinh bình thường, không có triệu chứng đặc biệt"
-    //   },
-    //   {
-    //     id: 2,
-    //     startDate: "2025-06-17",
-    //     endDate: "2025-06-22",
-    //     cycleLength: 28,
-    //     periodLength: 6,
-    //     notes: "Có đau bụng nhẹ vào ngày đầu"
-    //   },
-    //   {
-    //     id: 3,
-    //     startDate: "2025-07-15",
-    //     endDate: "2025-07-20",
-    //     cycleLength: 28,
-    //     periodLength: 5,
-    //     notes: "Kỳ kinh hiện tại, đang diễn ra"
-    //   }
-    // ];
-    // const mockData2 = [];
-    // setPeriodRecords(mockData);
   }, [userData]);
 
   // Tính toán thống kê
   const calculateStats = () => {
     if (periodRecords.length === 0) return null;
 
+    // Lấy tối đa 3 record gần nhất để tính trung bình
+    const recentRecords = periodRecords.slice(0, 3);
+    
     const avgCycleLength =
-      periodRecords.reduce((sum, record) => sum + record.cycleLength, 0) / periodRecords.length;
+      recentRecords.reduce((sum, record) => sum + record.cycleLength, 0) / recentRecords.length;
     const avgPeriodLength =
-      periodRecords.reduce((sum, record) => sum + record.periodDate, 0) /
-      periodRecords.length;
+      recentRecords.reduce((sum, record) => sum + record.periodDate, 0) / recentRecords.length;
 
     // Lấy kỳ kinh gần nhất
     const lastRecord = periodRecords[0];
@@ -218,12 +191,13 @@ export const PeriodTracking = () => {
       };
 
       await healthCycleApi.createHealthCycle(newRecord);
-      setPeriodRecords([...periodRecords, newRecord]);
+      //setPeriodRecords([...periodRecords, newRecord]);
       setIsModalVisible(false);
       form.resetFields();
       message.success("Đã ghi nhận chu kỳ kinh nguyệt!");
     } catch (error) {
       message.error("Có lỗi xảy ra!");
+      console.log(error);
     }
   };
 
@@ -253,9 +227,9 @@ export const PeriodTracking = () => {
   const getChartData = () => {
     console.log(periodRecords);
     return periodRecords.sort((a, b) => dayjs(b.recordDate).diff(dayjs(a.recordDate))).map((record) => ({
-      month: dayjs(record.recordDate).format("MM/YYYY"),
+      month: dayjs(record.recordDate).format("DD/MM/YYYY"),
       cycleLength: record.cycleLength,
-      periodLength: record.periodLength,
+      periodDate: record.periodDate,
     }));
   };
 
@@ -280,6 +254,31 @@ export const PeriodTracking = () => {
   };
 
   const nextPeriods = getNextPeriods(3);
+
+  // Hàm lấy giá trị mặc định cho form dựa trên record gần nhất
+  const getDefaultValues = () => {
+    if (periodRecords.length === 0) return {};
+    
+    // Lấy record gần nhất
+    const sortedRecords = [...periodRecords].sort((a, b) =>
+      dayjs(b.recordDate).diff(dayjs(a.recordDate))
+    );
+    const lastRecord = sortedRecords[0];
+    
+    // Kiểm tra nếu chu kỳ nằm trong khoảng 21-35 ngày thì điền sẵn
+    const defaultValues: { cycleLength?: number; periodLength?: number } = {};
+    
+    if (lastRecord.cycleLength >= 21 && lastRecord.cycleLength <= 35) {
+      defaultValues.cycleLength = lastRecord.cycleLength;
+    }
+    
+    if (lastRecord.periodDate >= 3 && lastRecord.periodDate <= 7) {
+      defaultValues.periodLength = lastRecord.periodDate;
+    }
+    
+    return defaultValues;
+  };
+
 
   return (
     <MainLayout
@@ -429,13 +428,13 @@ export const PeriodTracking = () => {
                           </span>
                         </div>
                         <Progress
-                          percent={(data.periodLength / data.cycleLength) * 100}
+                          percent={(data.periodDate / data.cycleLength) * 100}
                           size="small"
                           strokeColor="#ff4d4f"
                           showInfo={false}
                         />
                         <div className="flex justify-between text-xs text-gray-500 mt-1">
-                          <span>Hành kinh: {data.periodLength} ngày</span>
+                          <span>Hành kinh: {data.periodDate} ngày</span>
                           <span>Chu kỳ: {data.cycleLength} ngày</span>
                         </div>
                       </div>
@@ -455,15 +454,30 @@ export const PeriodTracking = () => {
           footer={null}
           width={600}
         >
-          <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Form 
+            form={form} 
+            layout="vertical" 
+            onFinish={handleSubmit}
+            initialValues={getDefaultValues()}
+          >
             <Form.Item
               label="Ngày bắt đầu kinh"
               name="startDate"
-              rules={[
-                { required: true, message: "Vui lòng chọn ngày bắt đầu!" },
-              ]}
+              rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
             >
-              <DatePicker style={{ width: "100%" }} />
+              <DatePicker
+                style={{ width: "100%" }}
+                onChange={(date) => {
+                  // Tính lại chu kỳ trung bình động
+
+                  const recentRecords = periodRecords[0];
+                  const dateDiff = dayjs(date).diff(dayjs(recentRecords.recordDate), "day");
+                  console.log(dateDiff);
+                  if (dateDiff && dateDiff >= 21 && dateDiff <= 35) {
+                    form.setFieldsValue({ cycleLength: dateDiff });
+                  }
+                }}
+              />
             </Form.Item>
 
             <Form.Item
@@ -483,7 +497,7 @@ export const PeriodTracking = () => {
                 { required: true, message: "Vui lòng nhập chu kỳ trung bình!" },
               ]}
             >
-              <Input type="number" min={20} max={40} placeholder="Ví dụ: 28" />
+              <Input type="number" min={20} placeholder="Ví dụ: 28" />
             </Form.Item>
 
             <Form.Item label="Ghi chú" name="notes">

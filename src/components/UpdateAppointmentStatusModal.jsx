@@ -8,7 +8,7 @@ const statusOptions = [
   { value: "PENDING", label: "Đang duyệt", disabled: true },
   { value: "CANCELLED", label: "Đã hủy" },
   { value: "APPROVE", label: "Đã duyệt" },
-  { value: "COMPLETED", label: "Hoàn thành" },
+  // { value: "COMPLETED", label: "Hoàn thành" },
 ];
 
 const UpdateAppointmentStatusModal = ({
