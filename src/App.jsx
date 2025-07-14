@@ -31,6 +31,7 @@ import { AdminDoctorsManage } from "./pages/admin/AdminDoctorsManage";
 import { AdminStaffManage } from "./pages/admin/AdminStaffManage";
 import { AdminService } from "./pages/admin/AdminService";
 import StaffCalendar from "./pages/staff/StaffCalendar";
+import { PeriodTracking } from "./pages/Patient/PeriodTracking";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<PatientProfile />} />
           <Route path="/calendar" element={<Calendar />} />
+          <Route path="/period-tracking" element={<PeriodTracking />} />
           <Route path="/appointment" element={<AppointmentList />} />
           <Route path="/appointment/:id" element={<AppointmentDetail />} />
           <Route path="/service" element={<Service />}/>

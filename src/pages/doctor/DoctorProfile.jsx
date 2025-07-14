@@ -57,7 +57,7 @@ const DoctorProfile = () => {
             </div>
             <div>
               <h3 className="text-xl font-semibold text-gray-800">
-                {userData.name || 'User Name'} <span className="text-gray-500 font-normal">({userData.gender || 'Not specified'})</span>
+                {userData.name || 'User Name'} 
               </h3>
               <p className="text-gray-600">{userData.role || 'Role/Occupation'}</p>
             </div>

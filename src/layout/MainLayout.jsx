@@ -16,7 +16,7 @@ import { getRoleLabel } from "../utils/getRoleLabel";
 import { Tag } from "antd";
 
 
-const MainLayout = ({ children, activeMenu }) => {
+const MainLayout = ({ children, activeMenu, displayName }) => {
   const navigate = useNavigate();
   const { userData, logout } = useUser();
 
@@ -29,8 +29,11 @@ const MainLayout = ({ children, activeMenu }) => {
     //{ label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "dashboard" },
     { label: "Calendar", icon: <AiOutlineCalendar size={22} />, key: "calendar" },
     ...(userData && userData.id
-      ? [{ label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "appointment" }]
+      ? [{ label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "appointment" }
+        ,{ label: "Period Tracking", icon: <FaSyringe size={22} />, key: "period-tracking" }
+      ]
       : []),
+   
     { label: "Services", icon: <FaSyringe size={22} />, key: "services" },  
     { label: "Profile", icon: <AiOutlineUser size={22} />, key: "profile" },
     { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },

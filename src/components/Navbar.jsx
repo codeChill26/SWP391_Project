@@ -38,7 +38,13 @@ export default function Navbar() {
           key: "/calendar",
           icon: <CalendarOutlined style={{ fontSize: '18px', color: '#fff' }} />,
           label: "Appointments",
-        }]
+        },
+        {
+          key: "/period-tracking",
+          icon: <CalendarOutlined style={{ fontSize: '18px', color: '#fff' }} />,
+          label: "Period Tracking",
+        }
+      ]
       : []),
     {
       key: "/about",
