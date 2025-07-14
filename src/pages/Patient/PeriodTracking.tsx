@@ -104,7 +104,9 @@ export const PeriodTracking = () => {
 
       // Đánh dấu ngày dễ thụ thai (màu vàng) - 14 ngày trước kỳ kinh tiếp theo
       const ovulationDate = startDate.add(cycleLength - 14, "day");
-      for (let i = -2; i <= 2; i++) {
+      var start = -Math.floor(record.periodDate/2);
+      var end = Math.floor(record.periodDate/2);
+      for (let i = start; i <= end; i++) {
         const fertileDate = ovulationDate.add(i, "day");
         // Không ghi đè ngày hành kinh
         if (!calendarData[fertileDate.format("YYYY-MM-DD")]) {
