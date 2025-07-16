@@ -3,10 +3,10 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const services = [
   {
-    title: "Mua thuốc trực tuyến",
-    desc: "Đặt thuốc theo toa, Nhận thuốc trong 2h.",
+    title: "Xét nghiệm HPV",
+    desc: "Kiểm tra virus HPV.",
     img: "/src/assets/images/service-purchases.png",
-    button: "Mua thuốc ngay",
+    button: "Đăng ký",
     bg: "bg-[#6EC1E4]",
   },
   {
@@ -17,8 +17,8 @@ const services = [
     bg: "bg-[#8ED6FB]",
   },
   {
-    title: "Xét nghiệm tại nhà",
-    desc: "Không cần chờ đợi, điều dưỡng sẽ lấy mẫu tận nơi.",
+    title: "Xét nghiệm HIV",
+    desc: "Đặc lịch trước, không cần chờ đợi.",
     img: "/src/assets/images/service-lab.png",
     button: "Đăng ký",
     bg: "bg-[#5ED6C1]",
@@ -29,13 +29,6 @@ const services = [
     img: "/src/assets/images/service-insurance.png",
     button: "Đăng ký",
     bg: "bg-[#7ED957]",
-  },
-  {
-    title: "Trị liệu giọng nói",
-    desc: "Tư vấn và hỗ trong điều trị giọng nói cho người chuyển giới.",
-    img: "/src/assets/images/service-voice.png",
-    button: "Tư vấn ngay",
-    bg: "bg-[#3B9AB8]",
   },
   {
     title: "Hỗ trợ PrEP/PEP",
