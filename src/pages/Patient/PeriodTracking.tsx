@@ -188,8 +188,8 @@ export const PeriodTracking = () => {
         userId: userData.id,
         recordDate: values.startDate.format("YYYY-MM-DD"),
         notes: values.notes || "",
-        periodDate: values.periodLength,
-        cycleLength: values.cycleLength,
+        periodDate: parseInt(values.periodLength),
+        cycleLength: parseInt(values.cycleLength),
       };
 
       await healthCycleApi.createHealthCycle(newRecord);
@@ -206,7 +206,7 @@ export const PeriodTracking = () => {
       form.resetFields();
       message.success("Đã ghi nhận chu kỳ kinh nguyệt!");
     } catch (error) {
-      message.error("Có lỗi xảy ra!");
+      message.error("Có lỗi xảy ra!" + error.response.data.message);
       console.log(error);
     }
   };
@@ -505,7 +505,7 @@ export const PeriodTracking = () => {
                 { required: true, message: "Vui lòng nhập số ngày hành kinh!" },
               ]}
             >
-              <Input type="number" min={1} max={10} placeholder="Ví dụ: 5" />
+              <Input type="number" min={3} max={10} placeholder="Ví dụ: 5" />
             </Form.Item>
 
             <Form.Item
