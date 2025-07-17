@@ -48,7 +48,6 @@ function App() {
           <Route path="/appointment" element={<AppointmentList />} />
           <Route path="/appointment/:id" element={<AppointmentDetail />} />
           <Route path="/service" element={<Service />}/>
-          <Route path="/services" element={<ServiceUser />} />
           <Route path="/blog" element={<Blog/>}/>
           <Route path="/admin" element={<Admin />} />
           <Route path="/about" element={<About />} />

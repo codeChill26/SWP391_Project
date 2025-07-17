@@ -34,7 +34,7 @@ const MainLayout = ({ children, activeMenu, displayName }) => {
       ]
       : []),
    
-    { label: "Services", icon: <FaSyringe size={22} />, key: "services" },  
+    { label: "Services", icon: <FaSyringe size={22} />, key: "service" },  
     { label: "Profile", icon: <AiOutlineUser size={22} />, key: "profile" },
     { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
   ];

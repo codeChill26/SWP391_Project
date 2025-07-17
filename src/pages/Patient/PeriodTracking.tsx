@@ -515,7 +515,7 @@ export const PeriodTracking = () => {
                 { required: true, message: "Vui lòng nhập chu kỳ trung bình!" },
               ]}
             >
-              <Input type="number" min={20} placeholder="Ví dụ: 28" />
+              <Input type="number" min={20} max={45} placeholder="Ví dụ: 28" />
             </Form.Item>
 
             <Form.Item label="Ghi chú" name="notes">
