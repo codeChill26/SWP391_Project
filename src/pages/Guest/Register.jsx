@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, Input, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, CloseOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -11,34 +12,29 @@ const Register = () => {
     try {
       setLoading(true);
       console.log('Attempting registration with:', values);
-      
-      const response = await fetch('http://api-genderhealthcare.purintech.id.vn/api/auth/register', {
-        method: 'POST',
+      const response = await axios.post('https://api-genderhealthcare.purintech.id.vn/api/auth/register', {
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        phoneNumber: values.phoneNumber,
+        dob: values.dob
+      }, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        credentials: 'include',
-        body: JSON.stringify({
-          fullName: values.fullName,
-          email: values.email,
-          password: values.password
-        })
+        withCredentials: true
       });
-
-      console.log('Response status:', response.status);
-      const data = await response.json();
-      console.log('Response data:', data);
-
-      if (response.ok) {
-        message.success('Registration successful! Please login.');
-        navigate('/login');
-      } else {
-        message.error(data.message || 'Registration failed. Please try again.');
-      }
+      console.log('Response:', response);
+      message.success('Đăng ký thành công! Vui lòng đăng nhập.');
+      navigate('/login');
     } catch (error) {
       console.error('Registration error:', error);
-      message.error('An error occurred. Please try again.');
+      if (error.response && error.response.data) {
+        message.error(error.response.data || 'Đăng ký thất bại. Vui lòng thử lại.');
+      } else {
+        message.error('Có lỗi xảy ra. Vui lòng thử lại.');
+      }
     } finally {
       setLoading(false);
     }
@@ -77,12 +73,12 @@ const Register = () => {
             onFinish={onFinish}
           >
             <Form.Item
-              name="fullName"
-              rules={[{ required: true, message: 'Please input your full name!' }]}
+              name="name"
+              rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }]}
             >
               <Input 
                 prefix={<UserOutlined className="text-gray-400" />} 
-                placeholder="Full Name" 
+                placeholder="Họ và tên" 
                 size="large"
               />
             </Form.Item>
@@ -90,27 +86,52 @@ const Register = () => {
             <Form.Item
               name="email"
               rules={[
-                { required: true, message: 'Please input your email!' },
-                { type: 'email', message: 'Please enter a valid email!' }
+                { required: true, message: 'Vui lòng nhập email!' },
+                { type: 'email', message: 'Email không hợp lệ!' }
               ]}
             >
               <Input 
                 prefix={<MailOutlined className="text-gray-400" />} 
-                placeholder="Email Address" 
+                placeholder="Địa chỉ email" 
                 size="large"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="phoneNumber"
+              rules={[
+                { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                { pattern: /^0\d{9,11}$/, message: 'Số điện thoại không hợp lệ!' }
+              ]}
+            >
+              <Input 
+                prefix={<UserOutlined className="text-gray-400" />} 
+                placeholder="Số điện thoại" 
+                size="large"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="dob"
+              rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}
+            >
+              <Input 
+                type="date"
+                size="large"
+                placeholder="Ngày sinh"
               />
             </Form.Item>
 
             <Form.Item
               name="password"
               rules={[
-                { required: true, message: 'Please input your password!' },
-                { min: 6, message: 'Password must be at least 6 characters!' }
+                { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                { min: 6, message: 'Mật khẩu tối thiểu 6 ký tự!' }
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined className="text-gray-400" />}
-                placeholder="Password"
+                placeholder="Mật khẩu"
                 size="large"
               />
             </Form.Item>
@@ -119,20 +140,20 @@ const Register = () => {
               name="confirmPassword"
               dependencies={['password']}
               rules={[
-                { required: true, message: 'Please confirm your password!' },
+                { required: true, message: 'Vui lòng xác nhận mật khẩu!' },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
                     if (!value || getFieldValue('password') === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(new Error('The two passwords do not match!'));
+                    return Promise.reject(new Error('Mật khẩu xác nhận không khớp!'));
                   },
                 }),
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined className="text-gray-400" />}
-                placeholder="Confirm Password"
+                placeholder="Xác nhận mật khẩu"
                 size="large"
               />
             </Form.Item>
