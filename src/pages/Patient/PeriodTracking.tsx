@@ -194,6 +194,7 @@ export const PeriodTracking = () => {
 
       await healthCycleApi.createHealthCycle(newRecord);
       //setPeriodRecords([...periodRecords, newRecord]);
+      
       const fetchHealthCycles = async () => {
         const healthCycles = await healthCycleApi.getHealthCycleByUserId(
           userData.id
