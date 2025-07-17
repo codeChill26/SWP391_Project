@@ -220,6 +220,14 @@ export const PeriodTracking = () => {
       setCurrentRecord(null);
       editForm.resetFields();
       message.success("Đã cập nhật thông tin!");
+      
+      const fetchHealthCycles = async () => {
+        const healthCycles = await healthCycleApi.getHealthCycleByUserId(
+          userData.id
+        );
+        setPeriodRecords(healthCycles);
+      };
+      fetchHealthCycles();
     } catch (error) {
       message.error("Có lỗi xảy ra!");
     }
