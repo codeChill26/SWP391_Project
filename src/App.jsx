@@ -32,6 +32,8 @@ import { AdminStaffManage } from "./pages/admin/AdminStaffManage";
 import { AdminService } from "./pages/admin/AdminService";
 import StaffCalendar from "./pages/staff/StaffCalendar";
 import { PeriodTracking } from "./pages/Patient/PeriodTracking";
+import { StaffProfilespatient } from "./pages/staff/StaffProfilespatient";
+import { Patient } from "./components/patients/PatientsList";
 
 function App() {
   return (
@@ -58,6 +60,8 @@ function App() {
           <Route path="/doctor/profiles" element={<DoctorProfile />} />
           <Route path="/staff/dashboard" element={<StaffDashboard />} />
           <Route path="/staff/appointment" element={<StaffAppointment />} />
+          <Route path="/staff/profilespatient" element={<StaffProfilespatient />} />
+          <Route path="/staff/profilespatient/:id" element={<Patient />} />
           <Route path="/staff/appointment/:id" element={<StaffAppointmentDetail />} />
           <Route path="/staff/profiles" element={<StaffProfile />} />
           <Route path="/staff/calendar" element={<StaffCalendar />} />

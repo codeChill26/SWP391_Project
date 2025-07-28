@@ -7,8 +7,9 @@ import {
   AiOutlineQuestionCircle,
   AiOutlineLogout,
   AiOutlineHome,
+  AiOutlineUserSwitch,
 } from "react-icons/ai";
-import { FaUserCircle, FaBell, FaChevronDown, FaSyringe } from "react-icons/fa";
+import { FaUserCircle, FaBell, FaChevronDown, FaSyringe, FaHospitalUser, FaUserInjured } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { getRoleLabel } from "../utils/getRoleLabel";
@@ -29,6 +30,11 @@ const sidebarMenu = [
     label: "Appointment",
     icon: <AiOutlineCalendar size={22} />,
     key: "staff/appointment",
+  },
+  {
+    label: "Patients",
+    icon: <FaUserInjured size={22} />,
+    key: "staff/profilespatient",
   },
   // { label: "Services", icon: <FaSyringe size={22} />, key: "staff/services" },
   {
@@ -75,6 +81,7 @@ const StaffLayout = ({ children, activeMenu, pageTitle }) => {
                 className={`
                   flex items-center gap-3 px-4 py-2 rounded-lg
                   transition
+                  relative z-10  // Thêm position relative và z-index
                   ${
                     activeMenu === item.key
                       ? "bg-[#3B9AB8] text-white font-semibold border-l-4 border-[#217a99]"

@@ -42,7 +42,7 @@ const StaffProfile = () => {
  
 
   return (
-    <StaffLayout activeMenu="staff/profile" pageTitle="Profile">
+    <StaffLayout activeMenu="staff/profiles" pageTitle="Profile">
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Profile Header Section */}
         <div className="bg-white rounded-xl shadow mb-6 p-6 relative">
