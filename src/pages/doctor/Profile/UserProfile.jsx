@@ -154,7 +154,7 @@ const UserProfile = () => {
             )}
           </div>
 
-          <div>
+          {/* <div>
             <label className="block text-gray-500 text-sm mb-1">Gender</label>
             {isEditingPersonalInfo ? (
               <select 
@@ -170,7 +170,7 @@ const UserProfile = () => {
             ) : (
               <div className="text-gray-800 font-medium">{userData?.gender || 'N/A'}</div>
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* Account Settings Section */}

@@ -11,6 +11,8 @@ import {
 import { FaUserCircle, FaBell, FaChevronDown, FaSyringe } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
+import { Tag } from "antd";
+import { getRoleLabel } from "../utils/getRoleLabel";
 
 const sidebarMenu = [
   //{ label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "doctor/dashboard" },
@@ -23,7 +25,7 @@ const sidebarMenu = [
 
 const DoctorLayout = ({ children, activeMenu, pageTitle }) => {
   const navigate = useNavigate();
-  const { updateUserData, logout } = useUser();
+  const { userData, logout } = useUser();
 
   // Lấy tên người dùng trực tiếp từ localStorage
   const name = localStorage.getItem('name') || 'User';
@@ -75,6 +77,7 @@ const DoctorLayout = ({ children, activeMenu, pageTitle }) => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="text-gray-500 text-lg">Hi, {name}</div>
+              <Tag>{getRoleLabel(userData.role)}</Tag>
               <div className="text-2xl font-bold capitalize">{pageTitle}</div>
             </div>
             <div className="flex items-center gap-4">

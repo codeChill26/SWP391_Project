@@ -121,7 +121,7 @@ const Service = () => {
               className="bg-white rounded-lg shadow p-6 flex flex-col items-stretch justify-between aspect-square min-h-[300px]"
             >
               <img
-                src={serviceImages[service.name] || "https://via.placeholder.com/300x160?text=No+Image"}
+                src={service.imageUrl || serviceImages[service.name] || "https://via.placeholder.com/300x160?text=No+Image"}
                 alt={service.name}
                 className="w-full h-40 object-cover rounded-md mb-4"
               />

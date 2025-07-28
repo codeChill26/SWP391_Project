@@ -184,6 +184,7 @@ export const PeriodTracking = () => {
   // Handle form submission
   const handleSubmit = async (values) => {
     try {
+      console.log("userData", userData);
       const newRecord = {
         userId: userData.id,
         recordDate: values.startDate.format("YYYY-MM-DD"),
@@ -297,6 +298,141 @@ export const PeriodTracking = () => {
     return defaultValues;
   };
 
+  // Định nghĩa kiểu dữ liệu cho advice
+  interface Advice {
+    title: string;
+    subtitle: string;
+    tips: string[];
+    nutrition: string[];
+    activities: string[];
+  }
+
+  // Hàm xác định giai đoạn hiện tại và đưa ra lời khuyên
+  const getCurrentPhaseAndAdvice = () => {
+    if (periodRecords.length === 0) return null;
+
+    const today = dayjs();
+    const sortedRecords = [...periodRecords].sort((a, b) =>
+      dayjs(b.recordDate).diff(dayjs(a.recordDate))
+    );
+    const lastRecord = sortedRecords[0];
+    const lastStartDate = dayjs(lastRecord.recordDate);
+    const cycleLength = lastRecord.cycleLength;
+    const periodLength = lastRecord.periodDate;
+
+    // Tính ngày bắt đầu kỳ kinh tiếp theo
+    const nextPeriodStart = lastStartDate.add(cycleLength, "day");
+    
+    // Tính ngày rụng trứng (14 ngày trước kỳ kinh tiếp theo)
+    const ovulationDate = nextPeriodStart.subtract(14, "day");
+    
+    // Tính khoảng thời gian dễ thụ thai (5 ngày trước và sau ngày rụng trứng)
+    const fertileStart = ovulationDate.subtract(2, "day");
+    const fertileEnd = ovulationDate.add(2, "day");
+
+    // Xác định giai đoạn hiện tại
+    let currentPhase = "";
+    let advice: Advice = {
+      title: "",
+      subtitle: "",
+      tips: [],
+      nutrition: [],
+      activities: []
+    };
+    let colorClass = "";
+
+    // Kiểm tra xem hôm nay có phải là ngày hành kinh không
+    const isInPeriod = (today.isAfter(nextPeriodStart) || today.isSame(nextPeriodStart)) && 
+                      today.isBefore(nextPeriodStart.add(periodLength, "day"));
+
+    if (isInPeriod) {
+      // Giai đoạn hành kinh
+      currentPhase = "Hành kinh";
+      colorClass = "bg-red-50 border-red-400 text-red-800";
+      advice = {
+        title: "🩸 Giai đoạn hành kinh",
+        subtitle: "Chăm sóc sức khỏe trong kỳ kinh",
+        tips: [
+          "Nghỉ ngơi đầy đủ và ngủ sớm",
+          "Uống nhiều nước và ăn thực phẩm giàu sắt",
+          "Tập thể dục nhẹ nhàng như yoga, đi bộ",
+          "Tránh stress và căng thẳng",
+          "Sử dụng tampon/băng vệ sinh thay đổi thường xuyên"
+        ],
+        nutrition: [
+          "Thực phẩm giàu sắt: thịt đỏ, rau xanh, đậu",
+          "Thực phẩm giàu vitamin C: cam, chanh, ớt chuông",
+          "Tránh caffeine và đồ uống có cồn"
+        ],
+        activities: [
+          "Tập yoga nhẹ nhàng",
+          "Đi bộ 15-20 phút mỗi ngày",
+          "Thiền định để giảm stress"
+        ]
+      };
+    } else if ((today.isAfter(fertileStart) || today.isSame(fertileStart)) && (today.isBefore(fertileEnd) || today.isSame(fertileEnd))) {
+      // Giai đoạn dễ thụ thai
+      currentPhase = "Dễ thụ thai";
+      colorClass = "bg-yellow-50 border-yellow-400 text-yellow-800";
+      advice = {
+        title: "🌺 Giai đoạn dễ thụ thai",
+        subtitle: "Thời điểm rụng trứng - cơ thể có nhiều năng lượng",
+        tips: [
+          "Tăng cường tập thể dục với cường độ vừa phải",
+          "Ăn uống đầy đủ dinh dưỡng",
+          "Quan hệ tình dục an toàn nếu có ý định mang thai",
+          "Theo dõi nhiệt độ cơ thể và chất nhầy cổ tử cung",
+          "Tránh stress để tăng khả năng thụ thai"
+        ],
+        nutrition: [
+          "Thực phẩm giàu protein: cá, thịt, trứng",
+          "Thực phẩm giàu vitamin E: hạt hướng dương, bơ",
+          "Thực phẩm giàu kẽm: hải sản, hạt bí"
+        ],
+        activities: [
+          "Tập cardio vừa phải",
+          "Yoga hoặc pilates",
+          "Đi bộ nhanh 30 phút"
+        ]
+      };
+    } else {
+      // Các ngày còn lại
+      currentPhase = "Các ngày còn lại";
+      colorClass = "bg-blue-50 border-blue-400 text-blue-800";
+      advice = {
+        title: "🌸 Giai đoạn phát triển nang trứng",
+        subtitle: "Cơ thể đang chuẩn bị cho chu kỳ tiếp theo",
+        tips: [
+          "Duy trì chế độ tập luyện đều đặn",
+          "Ăn uống cân bằng và đầy đủ dinh dưỡng",
+          "Theo dõi các triệu chứng PMS",
+          "Chuẩn bị tinh thần cho kỳ kinh sắp tới",
+          "Giữ tâm trạng thoải mái và tích cực"
+        ],
+        nutrition: [
+          "Thực phẩm giàu vitamin B: ngũ cốc nguyên hạt, chuối",
+          "Thực phẩm giàu magie: hạt điều, chocolate đen",
+          "Thực phẩm giàu omega-3: cá hồi, hạt chia"
+        ],
+        activities: [
+          "Tập thể dục cường độ trung bình",
+          "Thiền định hoặc yoga",
+          "Hoạt động ngoài trời"
+        ]
+      };
+    }
+
+    return {
+      phase: currentPhase,
+      advice,
+      colorClass,
+      daysUntilNextPeriod: nextPeriodStart.diff(today, "day"),
+      daysUntilOvulation: fertileStart.diff(today, "day")
+    };
+  };
+
+  const currentPhaseInfo = getCurrentPhaseAndAdvice();
+
 
   return (
     <MainLayout
@@ -389,7 +525,7 @@ export const PeriodTracking = () => {
 
           
 
-            {/* Calendar và Biểu đồ */}
+            {/* Calendar và Thống kê */}
             <Row gutter={16}>
               <Col span={16}>
                 <Card
@@ -417,25 +553,9 @@ export const PeriodTracking = () => {
                 </Card>
               </Col>
               <Col span={8}>
-                <Card
-                  title="Thống kê theo tháng"
-                  // extra={
-                  //   <Button
-                  //     type="text"
-                  //     icon={<EditOutlined />}
-                  //     onClick={() => {
-                  //       setCurrentRecord(
-                  //         periodRecords[periodRecords.length - 1]
-                  //       );
-                  //       setIsEditModalVisible(true);
-                  //     }}
-                  //   >
-                  //     Cập nhật
-                  //   </Button>
-                  // }
-                >
+                <Card title="Thống kê theo tháng">
                   <div className="space-y-4">
-                    {chartData.slice(0, 4).map((data, index) => (
+                    {chartData.slice(0, 3).map((data, index) => (
                       <div key={index} className="border-b pb-2">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-sm font-medium">
@@ -461,6 +581,138 @@ export const PeriodTracking = () => {
                 </Card>
               </Col>
             </Row>
+
+            {/* Lời khuyên sức khỏe dựa trên giai đoạn hiện tại */}
+            {currentPhaseInfo && (
+              <Row>
+                <Col span={24}>
+                  <Card 
+                    title={`Lời khuyên sức khỏe - ${currentPhaseInfo.phase}`}
+                    className="bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200"
+                  >
+                    {/* Thông tin giai đoạn hiện tại */}
+                    <div className={`p-4 mb-4 border-l-4 rounded ${currentPhaseInfo.colorClass}`}>
+                      <h3 className="text-lg font-semibold mb-2">{currentPhaseInfo.advice?.title}</h3>
+                      <p className="text-sm mb-3">{currentPhaseInfo.advice?.subtitle}</p>
+                      
+                      {/* Thông tin thời gian */}
+                      <div className="flex space-x-4 text-xs">
+                        {currentPhaseInfo.daysUntilNextPeriod > 0 && (
+                          <span className="bg-white px-2 py-1 rounded">
+                            Kỳ kinh tiếp theo: {currentPhaseInfo.daysUntilNextPeriod} ngày nữa
+                          </span>
+                        )}
+                        {currentPhaseInfo.daysUntilOvulation > 0 && (
+                          <span className="bg-white px-2 py-1 rounded">
+                            Thời điểm dễ thụ thai: {currentPhaseInfo.daysUntilOvulation} ngày nữa
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Lời khuyên chi tiết */}
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <div className="p-4 bg-white rounded border">
+                          <h4 className="font-medium text-gray-800 mb-3">💡 Lời khuyên chung</h4>
+                          <ul className="text-xs space-y-2">
+                            {currentPhaseInfo.advice?.tips?.map((tip, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="text-pink-500 mr-2">•</span>
+                                {tip}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </Col>
+                      
+                      <Col span={8}>
+                        <div className="p-4 bg-white rounded border">
+                          <h4 className="font-medium text-gray-800 mb-3">🥗 Dinh dưỡng</h4>
+                          <ul className="text-xs space-y-2">
+                            {currentPhaseInfo.advice?.nutrition?.map((item, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="text-green-500 mr-2">•</span>
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </Col>
+                      
+                      <Col span={8}>
+                        <div className="p-4 bg-white rounded border">
+                          <h4 className="font-medium text-gray-800 mb-3">🏃‍♀️ Hoạt động</h4>
+                          <ul className="text-xs space-y-2">
+                            {currentPhaseInfo.advice?.activities?.map((activity, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="text-blue-500 mr-2">•</span>
+                                {activity}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </Col>
+                    </Row>
+
+                    {/* Lời khuyên bổ sung dựa trên thống kê */}
+                    <div className="mt-4">
+                      <Row gutter={16}>
+                        {stats && stats.daysUntilNext <= 7 && (
+                          <Col span={8}>
+                            <div className="p-4 bg-orange-50 border-l-4 border-orange-400 rounded">
+                              <p className="text-sm font-medium text-orange-800 mb-2">
+                                ⚠️ Kỳ kinh sắp đến
+                              </p>
+                              <p className="text-xs text-orange-600">
+                                Chuẩn bị sẵn sàng cho kỳ kinh sắp tới. Nghỉ ngơi đầy đủ và ăn uống lành mạnh.
+                              </p>
+                            </div>
+                          </Col>
+                        )}
+                        
+                        {stats && (stats.avgCycleLength < 25 || stats.avgCycleLength > 35) && (
+                          <Col span={8}>
+                            <div className={`p-4 border-l-4 rounded ${
+                              stats.avgCycleLength < 25 
+                                ? 'bg-blue-50 border-blue-400' 
+                                : 'bg-yellow-50 border-yellow-400'
+                            }`}>
+                              <p className={`text-sm font-medium mb-2 ${
+                                stats.avgCycleLength < 25 ? 'text-blue-800' : 'text-yellow-800'
+                              }`}>
+                                {stats.avgCycleLength < 25 ? '💡 Chu kỳ ngắn' : '⏰ Chu kỳ dài'}
+                              </p>
+                              <p className={`text-xs ${
+                                stats.avgCycleLength < 25 ? 'text-blue-600' : 'text-yellow-600'
+                              }`}>
+                                {stats.avgCycleLength < 25 
+                                  ? 'Chu kỳ của bạn ngắn hơn bình thường. Nên tham khảo ý kiến bác sĩ nếu có bất thường.'
+                                  : 'Chu kỳ của bạn dài hơn bình thường. Theo dõi thêm và tham khảo ý kiến chuyên gia.'
+                                }
+                              </p>
+                            </div>
+                          </Col>
+                        )}
+                        
+                        {stats && stats.avgPeriodLength > 7 && (
+                          <Col span={8}>
+                            <div className="p-4 bg-red-50 border-l-4 border-red-400 rounded">
+                              <p className="text-sm font-medium text-red-800 mb-2">
+                                🩸 Thời gian hành kinh dài
+                              </p>
+                              <p className="text-xs text-red-600">
+                                Thời gian hành kinh kéo dài có thể cần được kiểm tra. Tham khảo ý kiến bác sĩ.
+                              </p>
+                            </div>
+                          </Col>
+                        )}
+                      </Row>
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
+            )}
           </div>
         )}
 
