@@ -9,16 +9,26 @@ import { FaDiagnoses } from "react-icons/fa";
 import { userApi } from "../../api/user-api";
 import { useParams } from "react-router-dom";
 import StaffLayout from "../../layout/StaffLayout";
+import { appointmentApi } from "../../api/appointment-api";
+import { AppointmentInfo } from "./AppointmentInfo";
+import { AppointmentDetail } from "./AppointmentDetail";
+import AppointmentsList from "./AppointmentsList";
 
 export const Patient = () => {
   const [userv, setUsers] = useState(null);
   const { id } = useParams();
+  const [appointments, setAppointment] = useState([]);
 
   useEffect(() => {
     const fetchUser = async () => {
       const response = await userApi.getUserById(id);
       setUsers(response);
     };
+    const fetchAppointment = async () => {
+      const booking = await appointmentApi.getAppointmentByUserId(id);
+      setAppointment(booking);
+    };
+    fetchAppointment();
     fetchUser();
   }, [id]);
 
@@ -26,7 +36,7 @@ export const Patient = () => {
   //   userv.length > 0 ? userv.find((user) => user.role === "patient") : null;
 
   return (
-    <StaffLayout activeMenu="staff/profilespatient" pageTitle="Appointment">
+    <StaffLayout activeMenu="staff/profilespatient" pageTitle="Patient Details">
       <div className="space-y-6 p-6 bg-gray-100 min-h-screen">
         {userv === null ? (
           <div className="flex justify-center items-center h-40">
@@ -74,6 +84,9 @@ export const Patient = () => {
                   </span>
                 </div>
               </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-6 mt-6">
+              <AppointmentsList appointments={appointments} />
             </div>
           </>
         )}
