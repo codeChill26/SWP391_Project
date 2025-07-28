@@ -8,6 +8,7 @@ import {
   message,
   Tooltip,
   Tag,
+  Image,
 } from "antd";
 import {
   DeleteOutlined,
@@ -67,7 +68,6 @@ export const AdminService = () => {
       okText: "Xóa",
       okType: "danger",
       cancelText: "Hủy",
-      confirmLoading: deleteLoading,
       onOk: async () => {
         try {
           setDeleteLoading(true);
@@ -113,6 +113,31 @@ export const AdminService = () => {
   };
 
   const columns = [
+    {
+      title: "Hình ảnh",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      width: 100,
+      render: (imageUrl) => (
+        <div style={{ textAlign: 'center' }}>
+          <Image
+            width={60}
+            height={45}
+            src={imageUrl || "https://imgs.search.brave.com/LpEWlQWkEEFxiHTSNhFBLm85idPVbQwwtxEG7yqcLuM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/bmhhdGh1b2Nsb25n/Y2hhdS5jb20udm4v/dW5zYWZlL2h0dHBz/Oi8vY21zLXByb2Qu/czMtc2duMDkuZnB0/Y2xvdWQuY29tL3F1/eV90cmluaF9raGFt/X2JlbmhfZ29tX25o/dW5nX2dpX21vdF9z/b19kaWV1X2Nhbl9s/dXVfeV9kYW5oX2No/b19iZW5oX25oYW5f/MV9lYzdhMTQwNDZk/LmpwZw"}
+            alt="Service Image"
+            fallback="https://imgs.search.brave.com/LpEWlQWkEEFxiHTSNhFBLm85idPVbQwwtxEG7yqcLuM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/bmhhdGh1b2Nsb25n/Y2hhdS5jb20udm4v/dW5zYWZlL2h0dHBz/Oi8vY21zLXByb2Qu/czMtc2duMDkuZnB0/Y2xvdWQuY29tL3F1/eV90cmluaF9raGFt/X2JlbmhfZ29tX25o/dW5nX2dpX21vdF9z/b19kaWV1X2Nhbl9s/dXVfeV9kYW5oX2No/b19iZW5oX25oYW5f/MV9lYzdhMTQwNDZk/LmpwZw"
+            style={{ 
+              borderRadius: '4px',
+              objectFit: 'cover'
+            }}
+            preview={{
+              mask: <EyeOutlined />,
+              maskClassName: "text-white"
+            }}
+          />
+        </div>
+      ),
+    },
     {
       title: "Tên dịch vụ",
       dataIndex: "name",

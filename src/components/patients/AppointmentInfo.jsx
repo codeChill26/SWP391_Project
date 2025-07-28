@@ -107,6 +107,19 @@ export const AppointmentInfo = ({ appointment }) => {
                   <span className="material-icons text-gray-400">
                     <FaDiagnoses />
                   </span>
+                  <span className="font-medium text-gray-600">Mô tả của bệnh nhân:</span>
+                </div>
+                <div className="ml-6 p-3 bg-gray-50 rounded-lg">
+                  <p className="text-gray-800">
+                    {appointment.patientNotes || "Chưa có"}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="material-icons text-gray-400">
+                    <FaDiagnoses />
+                  </span>
                   <span className="font-medium text-gray-600">Kết luận:</span>
                 </div>
                 <div className="ml-6 p-3 bg-gray-50 rounded-lg">
