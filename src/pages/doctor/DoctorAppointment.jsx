@@ -17,7 +17,7 @@ const statusTabs = [
   { key: "ALL", label: "Tất cả" },
   { key: "APPROVE", label: "Sắp diễn ra" },
   { key: "PENDING", label: "Đang duyệt" },
-  { key: "CANCEL", label: "Đã hủy" },
+  { key: "CANCELLED", label: "Đã hủy" },
   { key: "COMPLETED", label: "Hoàn thành" },
 ];
 
@@ -27,7 +27,7 @@ const getStatusColor = (status) => {
       return "orange";
     case "APPROVE":
       return "green";
-    case "CANCEL":
+    case "CANCELLED":
       return "red";
     case "COMPLETED":
       return "blue";
@@ -83,7 +83,9 @@ export const DoctorAppointment = () => {
   };
 
   const filteredAppointments = (activeTab === "ALL"
-    ? appointments
+    ? appointments.filter(
+      (app) => app.doctorId === userData.id
+    )
     : appointments.filter(
         (app) => app.status === activeTab && app.doctorId === userData.id
       )
