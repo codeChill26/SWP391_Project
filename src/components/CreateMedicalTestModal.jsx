@@ -1,94 +1,9 @@
-import { Modal, Form, Input, InputNumber, DatePicker, Select } from "antd";
+import { Modal, Form, Input, InputNumber, DatePicker, Select, Spin } from "antd";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import { provideMedicalTestApi } from "../api/provideMedicalTest-api";
 
 const { Option } = Select;
-
-// Cấu trúc phân cấp các loại xét nghiệm
-const testCategories = {
-  "STD_TESTS": {
-    label: "Xét nghiệm bệnh lây truyền qua đường tình dục",
-    tests: [
-      "HIV Combo (Kháng nguyên + Kháng thể)",
-      "HIV Kháng thể",
-      "Giang mai - VDRL",
-      "Giang mai - TPHA",
-      "Lậu - PCR",
-      "Lậu - Nuôi cấy",
-      "Chlamydia - PCR",
-      "Herpes HSV-1",
-      "Herpes HSV-2",
-      "HPV (Papillomavirus)"
-    ]
-  },
-  "HIV_MONITORING": {
-    label: "Theo dõi điều trị HIV",
-    tests: [
-      "CD4 Count",
-      "Tải lượng virus HIV",
-      "Tỷ lệ CD4",
-      "Tỷ lệ CD4/CD8",
-      "Kháng thuốc HIV"
-    ]
-  },
-  "MALE_HEALTH": {
-    label: "Sức khỏe nam giới",
-    tests: [
-      "PSA Tổng",
-      "PSA Tự do",
-      "Tinh dịch đồ",
-      "Testosterone",
-      "Prolactin",
-      "FSH (Nam)",
-      "LH (Nam)"
-    ]
-  },
-  "FEMALE_HEALTH": {
-    label: "Sức khỏe nữ giới",
-    tests: [
-      "Pap smear",
-      "HPV Genotyping",
-      "Estrogen",
-      "Progesterone",
-      "FSH (Nữ)",
-      "LH (Nữ)",
-      "AMH (Anti-Müllerian Hormone)",
-      "Beta HCG"
-    ]
-  },
-  "GENERAL_HEALTH": {
-    label: "Xét nghiệm tổng quát",
-    tests: [
-      "Công thức máu (CBC)",
-      "Đường huyết",
-      "Mỡ máu",
-      "Chức năng gan",
-      "Chức năng thận",
-      "Tổng phân tích nước tiểu",
-      "Viêm gan B",
-      "Viêm gan C",
-      "Chức năng tuyến giáp"
-    ]
-  },
-  "PREVENTION": {
-    label: "Dự phòng và tiêm chủng",
-    tests: [
-      "Sàng lọc trước PrEP",
-      "Theo dõi PEP",
-      "Định lượng kháng thể vaccine",
-      "Lao phổi"
-    ]
-  },
-  "CANCER_SCREENING": {
-    label: "Sàng lọc ung thư",
-    tests: [
-      "Sàng lọc ung thư tuyến tiền liệt",
-      "Sàng lọc ung thư cổ tử cung",
-      "Sàng lọc ung thư vú",
-      "Sàng lọc ung thư đại trực tràng"
-    ]
-  }
-};
 
 // Gợi ý placeholder theo loại xét nghiệm
 const getResultPlaceholder = (testName) => {
@@ -159,6 +74,22 @@ const getResultPlaceholder = (testName) => {
 const CreateMedicalTestModal = ({ visible, onOk, onCancel, appointmentId }) => {
   const [form] = Form.useForm();
   const [selectedTestName, setSelectedTestName] = useState(null);
+  const [medicalTests, setMedicalTests] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedTest, setSelectedTest] = useState(null);
+
+  // Fetch danh sách xét nghiệm từ API
+  const fetchMedicalTests = async () => {
+    setLoading(true);
+    try {
+      const data = await provideMedicalTestApi.getAllMedicalTests();
+      setMedicalTests(data);
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách xét nghiệm:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (visible) {
@@ -168,11 +99,23 @@ const CreateMedicalTestModal = ({ visible, onOk, onCancel, appointmentId }) => {
         testDate: dayjs(), // mặc định là ngày hiện tại
       });
       setSelectedTestName(null);
+      setSelectedTest(null);
+      fetchMedicalTests();
     }
   }, [visible, appointmentId, form]);
 
   const handleTestNameChange = (value) => {
     setSelectedTestName(value);
+    // Tìm thông tin xét nghiệm được chọn
+    const selectedTestData = medicalTests.find(test => test.testName === value);
+    setSelectedTest(selectedTestData);
+    
+    // Tự động điền giá nếu có
+    if (selectedTestData) {
+      form.setFieldsValue({
+        price: selectedTestData.price
+      });
+    }
   };
 
   return (
@@ -184,6 +127,7 @@ const CreateMedicalTestModal = ({ visible, onOk, onCancel, appointmentId }) => {
       okText="Tạo"
       cancelText="Hủy"
       destroyOnClose
+      width={600}
     >
       <Form form={form} layout="vertical">
         <Form.Item name="appointmentId" style={{ display: "none" }}>
@@ -199,21 +143,37 @@ const CreateMedicalTestModal = ({ visible, onOk, onCancel, appointmentId }) => {
             placeholder="Chọn tên xét nghiệm"
             showSearch
             onChange={handleTestNameChange}
+            loading={loading}
+            notFoundContent={loading ? <Spin size="small" /> : "Không tìm thấy xét nghiệm"}
             filterOption={(input, option) =>
               (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
             }
           >
-            {Object.entries(testCategories).map(([categoryKey, category]) => (
-              <Select.OptGroup key={categoryKey} label={category.label}>
-                {category.tests.map(test => (
-                  <Option key={test} value={test}>
-                    {test}
-                  </Option>
-                ))}
-              </Select.OptGroup>
+            {medicalTests.map(test => (
+              <Option key={test.id} value={test.testName}>
+                <div>
+                  <div className="font-medium">{test.testName} - {test.price} VND</div>
+                  
+                </div>
+              </Option>
             ))}
           </Select>
         </Form.Item>
+
+        {selectedTest && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+            <div className="text-sm">
+              <div className="font-medium text-blue-800 mb-1">Thông tin xét nghiệm:</div>
+              <div className="text-blue-600">{selectedTest.description}</div>
+              <div className="text-blue-600 mt-1">
+                Giá: {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(selectedTest.price)}
+              </div>
+            </div>
+          </div>
+        )}
 
         <Form.Item
           label="Ngày xét nghiệm"
@@ -241,15 +201,23 @@ const CreateMedicalTestModal = ({ visible, onOk, onCancel, appointmentId }) => {
           label="Ghi chú"
           name="notes"
         >
-          <Input />
+          <Input.TextArea rows={3} placeholder="Ghi chú bổ sung..." />
         </Form.Item>
 
         <Form.Item
-          label="Giá"
+          label="Giá (VNĐ)"
           name="price"
           rules={[{ required: true, message: "Vui lòng nhập giá" }]}
         >
-          <InputNumber min={0} style={{ width: "100%" }} />
+          <InputNumber 
+            min={0} 
+            style={{ width: "100%" }}
+            formatter={(value) =>
+              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            }
+            parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+            placeholder="Nhập giá xét nghiệm..."
+          />
         </Form.Item>
       </Form>
     </Modal>

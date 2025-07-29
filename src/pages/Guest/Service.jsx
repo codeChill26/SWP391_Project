@@ -88,7 +88,10 @@ const Service = () => {
       };
       await appointmentApi.scheduleAppointment(data);
       //console.log("schedule data", response)
-      message.success("Đặt lịch thành công!");
+      message.success(
+        "Đặt lịch thành công!"
+        ,10
+      );
       setModalOpen(false);
       setSelectedService(null);
       setDate(null);

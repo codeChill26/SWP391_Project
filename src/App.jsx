@@ -34,6 +34,8 @@ import StaffCalendar from "./pages/staff/StaffCalendar";
 import { PeriodTracking } from "./pages/Patient/PeriodTracking";
 import { StaffProfilespatient } from "./pages/staff/StaffProfilespatient";
 import { Patient } from "./components/patients/PatientsList";
+import { DoctorProfilespatient } from "./pages/doctor/DoctorProfilespatient";
+import AdminProvideMedicalTest from "./pages/admin/AdminProvideMedicalTest";
 
 function App() {
   return (
@@ -58,6 +60,8 @@ function App() {
           <Route path="/doctor/appointment/:id" element={<DoctorAppointmentDetail />} />
           <Route path="/doctor/calendar" element={<DoctorCalendar />} />
           <Route path="/doctor/profiles" element={<DoctorProfile />} />
+          <Route path="/doctor/profilespatient" element={<DoctorProfilespatient />} />
+          <Route path="/doctor/profilespatient/:id" element={<PatientProfile />} />
           <Route path="/staff/dashboard" element={<StaffDashboard />} />
           <Route path="/staff/appointment" element={<StaffAppointment />} />
           <Route path="/staff/profilespatient" element={<StaffProfilespatient />} />
@@ -70,6 +74,7 @@ function App() {
           <Route path="/admin/doctors" element={<AdminDoctorsManage />} />
           <Route path="/admin/staffs" element={<AdminStaffManage />} />
           <Route path="/admin/services" element={<AdminService />} />
+          <Route path="/admin/provide-medical-test" element={<AdminProvideMedicalTest />} />
         </Routes>
         <ToastContainer />
       </Router>

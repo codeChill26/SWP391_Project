@@ -12,6 +12,7 @@ import StaffLayout from "../../layout/StaffLayout";
 import { userApi } from "../../api/user-api";
 import { Patient } from "../../components/patients/PatientsList";
 import { Person } from "@mui/icons-material";
+import DoctorLayout from "../../layout/DoctorLayout";
 
 const statusTabs = [
   { key: "ALL", label: "Tất cả" },
@@ -43,7 +44,7 @@ const getStatusColor = (status) => {
   };
   return statusColors[status] || "default";
 };
-export const StaffProfilespatient = () => {
+export const DoctorProfilespatient = () => {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" hoặc "desc"
@@ -59,6 +60,7 @@ export const StaffProfilespatient = () => {
       setUsers(response);
     };
     fetchUsers();
+    console.log("users", users);
   }, []);
 
   const handleSortChange = (value) => {
@@ -69,11 +71,18 @@ export const StaffProfilespatient = () => {
   const filteredUsers = users.filter((user) => {
     const name = (user.name || user.fullname || "").toLowerCase();
     const search = searchText.toLowerCase();
-    return user.role === "patient" && name.includes(search);
+    console.log("user", user);
+    if (user.role === "patient") {
+      console.log("patient");
+    }
+    if (search) {
+      return user.role === "patient" && name.includes(search);
+    }
+    return user.role === "patient";
   });
 
   return (
-    <StaffLayout activeMenu="staff/profilespatient" pageTitle="Patients List">
+    <DoctorLayout activeMenu="staff/profilespatient" pageTitle="Patients List">
       <div className="flex flex-col gap-4 mb-4">
         <Input.Search
           placeholder="Tìm kiếm theo tên bệnh nhân..."
@@ -100,7 +109,7 @@ export const StaffProfilespatient = () => {
               key={user.id}
               // className="border-b last:border-b-0"
               className="w-full"
-              onClick={() => navigate(`/staff/profilespatient/${user.id}`)}
+              onClick={() => navigate(`/doctor/profilespatient/${user.id}`)}
             >
               <div className="w-full p-4">
                 {/* <div className="flex items-center justify-between mb-2">
@@ -173,6 +182,6 @@ export const StaffProfilespatient = () => {
           }}
         />
       </div>
-    </StaffLayout>
+    </DoctorLayout>
   );
 };

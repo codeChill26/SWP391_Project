@@ -10,7 +10,7 @@ export const UserLayout = (props) => {
                 {props.children}
             </div>
             <Footer />
-            <ChatWidget />  
+            {/* <ChatWidget />   */}
         </div>
     )
 }

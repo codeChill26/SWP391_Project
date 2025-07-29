@@ -18,6 +18,7 @@ const sidebarMenu = [
   { label: "Doctor", icon: <FaUserCircle size={22} />, key: "admin/doctors" },  
   { label: "Staff", icon: <FaUserCircle size={22} />, key: "admin/staffs" },  
   { label: "Services", icon: <FaSyringe size={22} />, key: "admin/services" },  
+  { label: "Medical Test", icon: <FaSyringe size={22} />, key: "admin/provide-medical-test" },  
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];
 

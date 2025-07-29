@@ -40,7 +40,7 @@ const Home = () => {
       </div>
       <Partners />
       <Footer />
-      <ChatWidget />
+      {/* <ChatWidget /> */}
       <BackToTop />
     </div>
   );

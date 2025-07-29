@@ -29,14 +29,14 @@ const formatTime = (timeString) => {
 const statusMap = {
   PENDING: "Đang duyệt",
   APPROVE: "Đã duyệt",
-  CANCEL: "Đã hủy",
+  CANCELLED: "Đã hủy",
   COMPLETED: "Hoàn thành",
 };
 
 const statusTabs = [
   { key: "PENDING", label: "Đang duyệt" },
   { key: "APPROVE", label: "Đã duyệt" },
-  { key: "CANCEL", label: "Đã hủy" },
+  { key: "CANCELLED", label: "Đã hủy" },
   { key: "COMPLETED", label: "Hoàn thành" },
 ];
 
@@ -61,7 +61,7 @@ const AppointmentList = () => {
           userData.id
         );
         setAppointments(response);
-        console.log(response);
+        console.log("Fetch appointments for patient", response);
       }
     };
     

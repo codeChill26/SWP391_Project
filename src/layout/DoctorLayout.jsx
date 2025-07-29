@@ -8,7 +8,7 @@ import {
   AiOutlineLogout,
   AiOutlineHome,
 } from "react-icons/ai";
-import { FaUserCircle, FaBell, FaChevronDown, FaSyringe } from "react-icons/fa";
+import { FaUserCircle, FaBell, FaChevronDown, FaSyringe, FaUserInjured } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { Tag } from "antd";
@@ -18,7 +18,12 @@ const sidebarMenu = [
   //{ label: "Dashboard", icon: <AiOutlineAppstore size={22} />, key: "doctor/dashboard" },
   { label: "Calendar", icon: <AiOutlineCalendar size={22} />, key: "doctor/calendar" },
   { label: "Appointment", icon: <AiOutlineCalendar size={22} />, key: "doctor/appointment" },
-  //{ label: "Services", icon: <FaSyringe size={22} />, key: "doctor/services" },  
+  //{ label: "Services", icon: <FaSyringe size={22} />, key: "doctor/services" },
+  {
+    label: "Patients",
+    icon: <FaUserInjured size={22} />,
+    key: "doctor/profilespatient",
+  }, 
   { label: "Profiles", icon: <AiOutlineUser size={22} />, key: "doctor/profiles" },
   { label: "Logout", icon: <AiOutlineLogout size={22} />, key: "logout" },
 ];
