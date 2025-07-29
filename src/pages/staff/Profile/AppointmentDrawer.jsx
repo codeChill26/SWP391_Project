@@ -90,11 +90,11 @@ const AppointmentDrawer = ({
                       </Text>
                     )}
                     {/* Thông tin bác sĩ */}
-                    {users && appointment.doctorId && (
+                    {users && appointment.user_Id && (
                       <Text type="secondary">
                         Bác sĩ: {
                           (() => {
-                            const doctor = users.find(u => u.id === appointment.doctorId);
+                            const doctor = users.find(u => u.id === appointment.user_Id);
                             return doctor
                               ? `${doctor.name || doctor.fullname} (${doctor.email || "N/A"})`
                               : "Không rõ";

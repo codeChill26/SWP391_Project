@@ -5,7 +5,6 @@ import { AppointmentInfo } from "../../components/patients/AppointmentInfo";
 import StaffLayout from "../../layout/StaffLayout";
 import UpdateAppointmentStatusModal from "../../components/UpdateAppointmentStatusModal";
 import { Button } from "antd";
-import { serviceApi } from "../../api/service-api";
 import { medicalTestApi } from "../../api/medicalTest-api";
 import MedicalTestCard from "../../components/MedicalTestCard";
 
@@ -25,6 +24,24 @@ export const StaffAppointmentDetail = () => {
     };
     fetchAppointment();
   }, [id]);
+  useEffect(() => {
+  const fetchAppointment = async () => {
+    const booking = await appointmentApi.getAppointmentById(id);
+
+    // Nếu có doctorId thì fetch thêm thông tin bác sĩ
+    if (booking.doctorId) {
+      try {
+        const doctorInfo = await appointmentApi.getDoctorById(booking.doctorId);
+        booking.doctor = doctorInfo; // Gán vào object appointment
+      } catch (error) {
+        console.error("Lỗi khi lấy thông tin bác sĩ:", error);
+      }
+    }
+
+    setAppointment(booking);
+  };
+  fetchAppointment();
+}, [id]);
 
   useEffect(() => {
     // get the list of doctors from the database

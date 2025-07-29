@@ -12,26 +12,12 @@ import dayjs from "dayjs";
 const { Text, Title } = Typography;
 const { TabPane } = Tabs;
 
-// Service details mapping
-const serviceDetails = {
-  1: { name: "Khám tổng quát", price: 200000 },
-  2: { name: "Xét nghiệm máu", price: 150000 },
-  3: { name: "Tư vấn sức khỏe", price: 100000 },
-  // Thêm các dịch vụ khác nếu cần
-};
-
 // Format time function
 const formatTime = (timeString) => {
   if (!timeString) return "N/A";
   return dayjs(timeString).format("DD/MM/YYYY HH:mm");
 };
 
-const statusMap = {
-  PENDING: "Đang duyệt",
-  APPROVE: "Đã duyệt",
-  CANCELLED: "Đã hủy",
-  COMPLETED: "Hoàn thành",
-};
 
 const statusTabs = [
   { key: "PENDING", label: "Đang duyệt" },

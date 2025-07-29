@@ -4,7 +4,7 @@ export const BASE_URL =
   "https://api-genderhealthcare.purintech.id.vn/api/appointments";
 
 export const appointmentApi = {
-  getAppointments: async (token) => {
+  getAppointments: async () => {
     try {
       const token = localStorage.getItem("token");
       const config = {
@@ -19,6 +19,34 @@ export const appointmentApi = {
       throw error;
     }
   },
+  getDoctorById: async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get(
+      `https://api-genderhealthcare.purintech.id.vn/api/users/${id}`,
+      config
+    );
+    const user = response.data;
+    if (user.role === "doctor") {
+      return {
+        id: user.user_id,
+        name: user.name,
+        email: user.email,
+        phone_number: user.phone_number,
+      };
+    } else {
+      throw new Error("User is not a doctor");
+    }
+  } catch (error) {
+    console.error("Error fetching doctor info:", error);
+    throw error;
+  }
+},
   getAppointmentById: async (id) => {
     try {
       const token = localStorage.getItem("token");
