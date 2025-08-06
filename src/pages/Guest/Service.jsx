@@ -9,11 +9,18 @@ import {
   Radio,
   Input,
   message,
+  Divider,
+  Typography,
 } from "antd";
 import axios from "axios";
 import { appointmentApi } from "../../api/appointment-api";
+import { vnpayApi } from "../../api/vnpay-api";
+import { saveAppointmentData } from "../../utils/paymentUtils";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { DollarOutlined, CreditCardOutlined } from "@ant-design/icons";
+
+const { Text, Title } = Typography;
 dayjs.extend(utc);
 
 const Service = () => {
@@ -46,6 +53,7 @@ const Service = () => {
     "Combo chăm sóc tình dục": "https://www.phongkhamsaigonmekong.com/wp-content/uploads/2021/02/gt.jpg",
     "Combo chăm sóc toàn diện": "https://benhvienbacha.vn/wp-content/uploads/2023/01/chuyen-gia-giai-dap-kham-suc-khoe-tong-quat-gom-nhung-gi.jpg"
   };
+
   useEffect(() => {
     axios
       .get("https://api-genderhealthcare.purintech.id.vn/api/services")
@@ -65,7 +73,7 @@ const Service = () => {
     setNotes("");
   };
 
-  const handleBooking = async () => {
+  const handlePayment = async () => {
     if (!date || !selectedService) {
       message.error("Vui lòng chọn ngày và thời gian!");
       return;
@@ -86,18 +94,47 @@ const Service = () => {
         appointmentTime: appointmentTime,
         paymentMethod: "pending",
       };
-      await appointmentApi.scheduleAppointment(data);
-      //console.log("schedule data", response)
-      message.success(
-        "Đặt lịch thành công!"
-        ,10
+
+      // Save appointment data to localStorage
+      const transactionId = saveAppointmentData(data);
+      
+      // Gọi API để tạo URL thanh toán VNPay
+      const amount = selectedService.price; // Số tiền gốc (không nhân 100)
+      const orderInfo = `Thanh toan dich vu: ${selectedService.id}`;
+      const callbackUrl = `${window.location.origin}/payment/callback`;
+      
+      console.log('Calling VNPay API with:', {
+        vnpayId: transactionId,
+        amount: amount,
+        orderInfo: orderInfo,
+        callbackUrl: callbackUrl
+      });
+
+      const response = await vnpayApi.createPayment(
+        transactionId,
+        amount,
+        orderInfo,
+        callbackUrl
       );
+
+      if (response.success && response.paymentUrl) {
+        message.success(
+          "Đang chuyển đến trang thanh toán VNPay..."
+          ,10
+        );
+        
+        // Redirect to VNPay payment URL
+        window.location.href = response.paymentUrl;
+      } else {
+        message.error("Có lỗi xảy ra khi tạo URL thanh toán!");
+      }
+      
       setModalOpen(false);
       setSelectedService(null);
       setDate(null);
       setNotes("");
     } catch (error) {
-      message.error("Đặt lịch thất bại!");
+      message.error("Có lỗi xảy ra khi tạo thanh toán!");
       console.log("error", error);
     }
   };
@@ -148,66 +185,119 @@ const Service = () => {
       </div>
       <Footer />
       <Modal
-        title="Đặt lịch dịch vụ"
+        title={
+          <div className="flex items-center">
+            <CreditCardOutlined className="mr-2 text-blue-600" />
+            <span>Đặt lịch dịch vụ</span>
+          </div>
+        }
         open={modalOpen}
         onCancel={handleModalClose}
         footer={null}
+        width={600}
       >
-        <div className="mb-4">
-          <label>Tên dịch vụ:</label>
-          <Input value={selectedService?.name || ""} disabled />
+        {/* Thông tin dịch vụ */}
+        <div className="bg-gray-50 p-4 rounded-lg mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <Text strong className="text-lg">{selectedService?.name}</Text>
+            <div className="text-right">
+              <Text className="text-gray-600 text-sm">Giá dịch vụ</Text>
+              <div className="text-2xl font-bold text-blue-600">
+                {selectedService?.price?.toLocaleString()} VNĐ
+              </div>
+            </div>
+          </div>
+          <Text className="text-gray-600">{selectedService?.description}</Text>
         </div>
-        <div className="mb-4">
-          <label>Giá dịch vụ:</label>
-          <Input
-            value={
-              selectedService
-                ? `${selectedService.price.toLocaleString()} VNĐ`
-                : ""
-            }
-            disabled
-          />
+
+        {/* Thông tin đặt lịch */}
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Chọn ngày và thời gian:
+            </label>
+            <DatePicker
+              className="w-full"
+              showTime={{
+                format: 'HH:mm',
+                minuteStep: 30,
+                showNow: false,
+                hideDisabledOptions: true,
+                disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 7, 8, 18, 19, 20, 21, 22, 23],
+                disabledMinutes: () => {
+                  // Chỉ cho phép các phút 0 và 30
+                  return Array.from({ length: 60 }, (_, i) => i).filter(minute => minute % 30 !== 0);
+                }
+              }}
+              value={date}
+              onChange={setDate}
+              disabledDate={(d) => d && d < new Date()}
+              format="YYYY-MM-DD HH:mm"
+              placeholder="Chọn ngày và thời gian"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Ghi chú (nếu có):
+            </label>
+            <Input
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Nhập tình trạng hoặc yêu cầu đặc biệt..."
+              rows={3}
+            />
+          </div>
         </div>
-        <div className="mb-4">
-          <label>Chọn ngày:</label>
-          <DatePicker
-            className="w-full"
-            showTime={{
-              format: 'HH:mm',
-              minuteStep: 30,
-              showNow: false,
-              hideDisabledOptions: true,
-              disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 7, 8, 18, 19, 20, 21, 22, 23],
-              disabledMinutes: () => {
-                // Chỉ cho phép các phút 0 và 30
-                return Array.from({ length: 60 }, (_, i) => i).filter(minute => minute % 30 !== 0);
-              }
-            }}
-            value={date}
-            onChange={setDate}
-            disabledDate={(d) => d && d < new Date()}
-            format="YYYY-MM-DD HH:mm"
-            placeholder="Chọn ngày và thời gian"
-          />
+
+        {/* Tổng kết thanh toán */}
+        <Divider />
+        <div className="bg-blue-50 p-4 rounded-lg mb-6">
+          {/* <div className="flex justify-between items-center mb-2">
+            <Text>Phí dịch vụ:</Text>
+            <Text>{selectedService?.price?.toLocaleString()} VNĐ</Text>
+          </div> */}
+          <Divider className="my-2" />
+          <div className="flex justify-between items-center">
+            <Text strong className="text-lg">Tổng cộng:</Text>
+            <Text strong className="text-lg text-blue-600">
+              {selectedService?.price?.toLocaleString()} VNĐ
+            </Text>
+          </div>
         </div>
-        <div className="mb-4">
-          <label>Nêu tình trạng (Nếu có):</label>
-          <Input
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Nhập tình trạng của bạn..."
-          />
+
+        {/* Thông tin thanh toán */}
+        <div className="bg-yellow-50 p-4 rounded-lg mb-6">
+          <div className="flex items-center mb-2">
+            <DollarOutlined className="text-yellow-600 mr-2" />
+            <Text strong className="text-yellow-800">Thông tin thanh toán</Text>
+          </div>
+          <Text className="text-sm text-yellow-700">
+            • Thanh toán trước khi khám để đảm bảo lịch hẹn<br/>
+            • Hỗ trợ thanh toán qua VNPay, chuyển khoản ngân hàng<br/>
+            • Có thể phát sinh thêm chi phí xét nghiệm trong quá trình khám
+          </Text>
         </div>
-        <div className="flex justify-end">
-          <Button onClick={handleModalClose} style={{ marginRight: 8 }}>
+
+        {/* Nút thanh toán */}
+        <div className="flex justify-end space-x-3">
+          <Button onClick={handleModalClose} size="large">
             Hủy
           </Button>
           <Button
             type="primary"
-            style={{ background: "#3B9AB8", borderColor: "#3B9AB8" }}
-            onClick={handleBooking}
+            size="large"
+            icon={<CreditCardOutlined />}
+            style={{ 
+              background: "#3B9AB8", 
+              borderColor: "#3B9AB8",
+              height: "48px",
+              padding: "0 24px"
+            }}
+            onClick={handlePayment}
+            disabled={!date}
           >
-            Tiếp tục
+            Thanh toán ngay
           </Button>
         </div>
       </Modal>

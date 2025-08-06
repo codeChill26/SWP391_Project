@@ -36,6 +36,7 @@ import { StaffProfilespatient } from "./pages/staff/StaffProfilespatient";
 import { Patient } from "./components/patients/PatientsList";
 import { DoctorProfilespatient } from "./pages/doctor/DoctorProfilespatient";
 import AdminProvideMedicalTest from "./pages/admin/AdminProvideMedicalTest";
+import PaymentCallback from "./pages/Guest/PaymentCallback";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
           <Route path="/blog" element={<Blog/>}/>
           <Route path="/admin" element={<Admin />} />
           <Route path="/about" element={<About />} />
+          <Route path="/payment/callback" element={<PaymentCallback />} />
           <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
           <Route path="/doctor/appointment" element={<DoctorAppointment />} />
           <Route path="/doctor/appointment/:id" element={<DoctorAppointmentDetail />} />
