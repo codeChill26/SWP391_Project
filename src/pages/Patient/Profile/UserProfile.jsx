@@ -5,13 +5,32 @@ import { useUser } from '../../../context/UserContext';
 const UserProfile = () => {
   const { userData, updateUserData } = useUser();
   const [isEditingPersonalInfo, setIsEditingPersonalInfo] = useState(false);
-  const [editingData, setEditingData] = useState({
-    name: userData?.name || '',
-    email: userData?.email || '',
-    phoneNumber: userData?.phoneNumber || '',
-    dob: userData?.dob || '',
-    gender: userData?.gender || '',
-  });
+  const [editingData, setEditingData] = useState({});
+
+  // Hàm chuyển đổi gender từ tiếng Anh sang tiếng Việt
+  const getGenderDisplay = (gender) => {
+    switch (gender) {
+      case 'male':
+        return 'Nam';
+      case 'female':
+        return 'Nữ';
+      case 'other':
+        return 'Khác';
+      default:
+        return 'N/A';
+    }
+  };
+
+  // Khởi tạo editingData
+  React.useEffect(() => {
+    setEditingData({
+      name: userData?.name || '',
+      email: userData?.email || '',
+      phoneNumber: userData?.phoneNumber || '',
+      dob: userData?.dob || '',
+      gender: userData?.gender || '',
+    });
+  }, [userData]);
 
   // Hàm tính tuổi
   const calculateAge = (birthDate) => {
@@ -153,7 +172,7 @@ const UserProfile = () => {
             )}
           </div>
 
-          {/* <div>
+          <div>
             <label className="block text-gray-500 text-sm mb-1">Gender</label>
             {isEditingPersonalInfo ? (
               <select 
@@ -162,14 +181,14 @@ const UserProfile = () => {
                 className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#3B9AB8]"
               >
                 <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+                <option value="other">Khác</option>
               </select>
             ) : (
-              <div className="text-gray-800 font-medium">{userData?.gender || 'N/A'}</div>
+              <div className="text-gray-800 font-medium">{getGenderDisplay(userData?.gender)}</div>
             )}
-          </div> */}
+          </div>
         </div>
 
         {/* Account Settings Section */}

@@ -33,13 +33,19 @@ export const serviceApi = {
     return response.data;
   },
   updateService: async (id, data) => {
+    console.log("submit service data", data);
     const token = localStorage.getItem("token")
     const config = {
       headers: {
         Authorization: `Bearer ${token}`
       }
     }
-    const response = await axios.put(`https://api-genderhealthcare.purintech.id.vn/api/services/${id}`, data, config);
+    const response = await axios.put(
+      `https://api-genderhealthcare.purintech.id.vn/api/services/${id}`,
+      data,
+      config
+    );
+    console.log("update service response", response);
     return response.data;
   },
   deleteService: async (id) => {

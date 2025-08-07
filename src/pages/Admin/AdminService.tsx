@@ -96,6 +96,7 @@ export const AdminService = () => {
   const handleFormSubmit = async (values) => {
     setFormLoading(true);
     try {
+      console.log("submit service values", values);
       if (editingService) {
         await serviceApi.updateService(editingService.id, values);
         message.success("Cập nhật dịch vụ thành công!");

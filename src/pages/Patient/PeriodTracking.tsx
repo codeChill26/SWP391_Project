@@ -20,6 +20,7 @@ import {
   CalendarOutlined,
   BarChartOutlined,
   EditOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useUser } from "../../context/UserContext";
@@ -39,6 +40,42 @@ export const PeriodTracking = () => {
   const [currentRecord, setCurrentRecord] = useState(null);
   const [form] = Form.useForm();
   const [editForm] = Form.useForm();
+
+  // Hàm tính tuổi
+  const calculateAge = (birthDate) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    
+    return age;
+  };
+
+  // Kiểm tra điều kiện truy cập
+  const checkAccessPermission = () => {
+    if (!userData) return { allowed: false, reason: 'no_user' };
+    
+    // Kiểm tra giới tính
+    if (userData.gender !== 'female') {
+      return { allowed: false, reason: 'gender' };
+    }
+    
+    // Kiểm tra tuổi
+    if (userData.dob) {
+      const age = calculateAge(userData.dob);
+      if (age < 8) {
+        return { allowed: false, reason: 'age' };
+      }
+    }
+    
+    return { allowed: true };
+  };
+
+  const accessCheck = checkAccessPermission();
 
   const { token } = theme.useToken();
   const wrapperStyle = {
@@ -217,10 +254,10 @@ export const PeriodTracking = () => {
     try {
       const updatedRecord = {
         userId: userData.id,
-        recordDate: currentRecord.recordDate, // hoặc lấy từ currentRecord/startDate
+        recordDate: values.recordDate.format("YYYY-MM-DD"),
         notes: values.notes,
-        periodDate: currentRecord.periodDate, // hoặc cho phép sửa nếu muốn
-        cycleLength: currentRecord.cycleLength, // hoặc cho phép sửa nếu muốn
+        periodDate: parseInt(values.periodLength),
+        cycleLength: parseInt(values.cycleLength),
       };
 
       await healthCycleApi.updateHealthCycle(currentRecord.id, updatedRecord);
@@ -240,6 +277,28 @@ export const PeriodTracking = () => {
     } catch (error) {
       message.error("Có lỗi xảy ra!");
     }
+  };
+
+  const handleDeleteRecord = async (recordId) => {
+    try {
+      await healthCycleApi.deleteHealthCycle(recordId);
+      message.success("Xóa thành công!");
+
+      const fetchHealthCycles = async () => {
+        const healthCycles = await healthCycleApi.getHealthCycleByUserId(
+          userData.id
+        );
+        setPeriodRecords(healthCycles);
+      };
+      fetchHealthCycles();
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi xóa!");
+    }
+  };
+
+  const handleEditRecord = (record) => {
+    setCurrentRecord(record);
+    setIsEditModalVisible(true);
   };
 
   // Tạo dữ liệu cho biểu đồ
@@ -440,7 +499,28 @@ export const PeriodTracking = () => {
       displayName="Theo dõi chu kỳ kinh nguyệt"
     >
       <div className="max-w-7xl mx-auto py-6 px-4">
-        {periodRecords.length === 0 ? (
+        {/* Kiểm tra quyền truy cập */}
+        {!accessCheck.allowed ? (
+          <div className="text-center py-12">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-8 max-w-md mx-auto">
+              <div className="text-red-500 text-6xl mb-4">🚫</div>
+              <h2 className="text-2xl font-bold text-red-700 mb-4">
+                Không thể truy cập
+              </h2>
+              <p className="text-red-600 mb-4">
+                {accessCheck.reason === 'gender' 
+                  ? 'Tính năng này chỉ dành cho người dùng nữ.'
+                  : accessCheck.reason === 'age'
+                  ? 'Bạn phải từ 8 tuổi trở lên để sử dụng tính năng này.'
+                  : 'Không thể xác định thông tin người dùng.'
+                }
+              </p>
+              <p className="text-sm text-red-500">
+                Vui lòng liên hệ quản trị viên nếu bạn cho rằng đây là lỗi.
+              </p>
+            </div>
+          </div>
+        ) : periodRecords.length === 0 ? (
           // Giao diện khi chưa có dữ liệu
           <div className="text-center py-12">
             <CalendarOutlined className="text-6xl text-gray-300 mb-4" />
@@ -555,28 +635,66 @@ export const PeriodTracking = () => {
               <Col span={8}>
                 <Card title="Thống kê theo tháng">
                   <div className="space-y-4">
-                    {chartData.slice(0, 3).map((data, index) => (
-                      <div key={index} className="border-b pb-2">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-sm font-medium">
-                            {data.month}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {data.cycleLength} ngày
-                          </span>
+                    {chartData.slice(0, 3).map((data, index) => {
+                      const record = periodRecords.find(r => 
+                        dayjs(r.recordDate).format("DD/MM/YYYY") === data.month
+                      );
+                      
+                      return (
+                        <div key={index} className="border-b pb-2">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-sm font-medium">
+                              {data.month}
+                            </span>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xs text-gray-500">
+                                {data.cycleLength} ngày
+                              </span>
+                              {/* Chỉ hiển thị nút cho phần tử đầu tiên (mới nhất) */}
+                              {index === 0 && record && (
+                                <div className="flex space-x-1">
+                                  <Button
+                                    type="text"
+                                    size="small"
+                                    icon={<EditOutlined />}
+                                    onClick={() => handleEditRecord(record)}
+                                    className="text-blue-600 hover:text-blue-800"
+                                    title="Cập nhật"
+                                  />
+                                  <Button
+                                    type="text"
+                                    size="small"
+                                    icon={<DeleteOutlined />}
+                                    onClick={() => {
+                                      Modal.confirm({
+                                        title: 'Xác nhận xóa',
+                                        content: 'Bạn có chắc chắn muốn xóa kỳ kinh này?',
+                                        okText: 'Xóa',
+                                        okType: 'danger',
+                                        cancelText: 'Hủy',
+                                        onOk: () => handleDeleteRecord(record.id)
+                                      });
+                                    }}
+                                    className="text-red-600 hover:text-red-800"
+                                    title="Xóa"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <Progress
+                            percent={(data.periodDate / data.cycleLength) * 100}
+                            size="small"
+                            strokeColor="#ff4d4f"
+                            showInfo={false}
+                          />
+                          <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>Hành kinh: {data.periodDate} ngày</span>
+                            <span>Chu kỳ: {data.cycleLength} ngày</span>
+                          </div>
                         </div>
-                        <Progress
-                          percent={(data.periodDate / data.cycleLength) * 100}
-                          size="small"
-                          strokeColor="#ff4d4f"
-                          showInfo={false}
-                        />
-                        <div className="flex justify-between text-xs text-gray-500 mt-1">
-                          <span>Hành kinh: {data.periodDate} ngày</span>
-                          <span>Chu kỳ: {data.cycleLength} ngày</span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </Card>
               </Col>
@@ -743,7 +861,7 @@ export const PeriodTracking = () => {
                   const recentRecords = periodRecords[0];
                   const dateDiff = dayjs(date).diff(dayjs(recentRecords.recordDate), "day");
                   console.log(dateDiff);
-                  if (dateDiff && dateDiff >= 21 && dateDiff <= 35) {
+                  if (dateDiff && dateDiff >= 21 && dateDiff <= 45) {
                     form.setFieldsValue({ cycleLength: dateDiff });
                   }
                 }}
@@ -757,7 +875,7 @@ export const PeriodTracking = () => {
                 { required: true, message: "Vui lòng nhập số ngày hành kinh!" },
               ]}
             >
-              <Input type="number" min={3} max={10} placeholder="Ví dụ: 5" />
+              <Input type="number" min={1} max={14} placeholder="Ví dụ: 5" />
             </Form.Item>
 
             <Form.Item
@@ -767,7 +885,7 @@ export const PeriodTracking = () => {
                 { required: true, message: "Vui lòng nhập chu kỳ trung bình!" },
               ]}
             >
-              <Input type="number" min={20} max={45} placeholder="Ví dụ: 28" />
+              <Input type="number" min={20} max={60} placeholder="Ví dụ: 28" />
             </Form.Item>
 
             <Form.Item label="Ghi chú" name="notes">
@@ -795,7 +913,7 @@ export const PeriodTracking = () => {
           open={isEditModalVisible}
           onCancel={() => setIsEditModalVisible(false)}
           footer={null}
-          width={500}
+          width={600}
         >
           <Form
             form={editForm}
@@ -804,20 +922,55 @@ export const PeriodTracking = () => {
             initialValues={
               currentRecord
                 ? {
-                    endDate: dayjs(currentRecord.endDate),
+                    recordDate: dayjs(currentRecord.recordDate),
+                    periodLength: currentRecord.periodDate,
+                    cycleLength: currentRecord.cycleLength,
                     notes: currentRecord.notes,
                   }
                 : {}
             }
           >
             <Form.Item
-              label="Ngày kết thúc chu kỳ"
-              name="endDate"
+              label="Ngày bắt đầu kinh"
+              name="recordDate"
+              rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
+            >
+              <DatePicker
+                style={{ width: "100%" }}
+                onChange={(date) => {
+                  // Tính lại chu kỳ trung bình động
+                  if (currentRecord && date) {
+                    const recentRecords = periodRecords.filter(r => r.id !== currentRecord.id);
+                    if (recentRecords.length > 0) {
+                      const lastRecord = recentRecords[0];
+                      const dateDiff = dayjs(date).diff(dayjs(lastRecord.recordDate), "day");
+                      if (dateDiff && dateDiff >= 21 && dateDiff <= 45) {
+                        editForm.setFieldsValue({ cycleLength: dateDiff });
+                      }
+                    }
+                  }
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Số ngày hành kinh"
+              name="periodLength"
               rules={[
-                { required: true, message: "Vui lòng chọn ngày kết thúc!" },
+                { required: true, message: "Vui lòng nhập số ngày hành kinh!" },
               ]}
             >
-              <DatePicker style={{ width: "100%" }} />
+              <Input type="number" min={1} max={14} placeholder="Ví dụ: 5" />
+            </Form.Item>
+
+            <Form.Item
+              label="Chu kỳ trung bình (ngày)"
+              name="cycleLength"
+              rules={[
+                { required: true, message: "Vui lòng nhập chu kỳ trung bình!" },
+              ]}
+            >
+              <Input type="number" min={20} max={60} placeholder="Ví dụ: 28" />
             </Form.Item>
 
             <Form.Item label="Ghi chú" name="notes">

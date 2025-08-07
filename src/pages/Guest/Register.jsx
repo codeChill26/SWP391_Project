@@ -17,7 +17,8 @@ const Register = () => {
         email: values.email,
         password: values.password,
         phoneNumber: values.phoneNumber,
-        dob: values.dob
+        dob: values.dob,
+        gender: values.gender
       }, {
         headers: {
           'Content-Type': 'application/json',
@@ -120,6 +121,21 @@ const Register = () => {
                 size="large"
                 placeholder="Ngày sinh"
               />
+            </Form.Item>
+
+            <Form.Item
+              name="gender"
+              rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}
+            >
+              <select 
+                className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                size="large"
+              >
+                <option value="">Chọn giới tính</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+                <option value="other">Khác</option>
+              </select>
             </Form.Item>
 
             <Form.Item
