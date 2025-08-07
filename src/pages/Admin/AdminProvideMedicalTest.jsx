@@ -140,7 +140,12 @@ const AdminProvideMedicalTest = () => {
     form.setFieldsValue({
       testName: record.testName,
       description: record.description,
+      descriptionLow: record.descriptionLow,
+      descriptionHigh: record.descriptionHigh,
       price: record.price,
+      min: record.min,
+      max: record.max,
+      unit: record.unit,
     });
     setIsModalVisible(true);
   };
@@ -150,7 +155,12 @@ const AdminProvideMedicalTest = () => {
     viewForm.setFieldsValue({
       testName: record.testName,
       description: record.description,
+      descriptionLow: record.descriptionLow,
+      descriptionHigh: record.descriptionHigh,
       price: record.price,
+      min: record.min,
+      max: record.max,
+      unit: record.unit,
       id: record.id,
       version: record.version,
     });
@@ -200,6 +210,21 @@ const AdminProvideMedicalTest = () => {
         <Tooltip title={text}>
           <span className="text-gray-600">{text}</span>
         </Tooltip>
+      ),
+    },
+    {
+      title: "Khoảng giá trị",
+      key: "range",
+      width: 150,
+      render: (_, record) => (
+        <div className="text-sm">
+          <div className="font-medium text-gray-800">
+            {record.min} - {record.max}
+          </div>
+          <div className="text-gray-500 text-xs">
+            {record.unit}
+          </div>
+        </div>
       ),
     },
     {
@@ -367,6 +392,8 @@ const AdminProvideMedicalTest = () => {
             onFinish={handleSubmit}
             initialValues={{
               price: 0,
+              min: 0,
+              max: 0,
             }}
           >
             <Form.Item
@@ -395,6 +422,32 @@ const AdminProvideMedicalTest = () => {
             </Form.Item>
 
             <Form.Item
+              label="Mô tả khi kết quả thấp"
+              name="descriptionLow"
+              rules={[
+                { required: true, message: "Vui lòng nhập mô tả cho kết quả thấp!" },
+              ]}
+            >
+              <TextArea
+                rows={3}
+                placeholder="Mô tả khi kết quả xét nghiệm thấp..."
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Mô tả khi kết quả cao"
+              name="descriptionHigh"
+              rules={[
+                { required: true, message: "Vui lòng nhập mô tả cho kết quả cao!" },
+              ]}
+            >
+              <TextArea
+                rows={3}
+                placeholder="Mô tả khi kết quả xét nghiệm cao..."
+              />
+            </Form.Item>
+
+            <Form.Item
               label="Giá (VNĐ)"
               name="price"
               rules={[
@@ -411,6 +464,52 @@ const AdminProvideMedicalTest = () => {
                 placeholder="Ví dụ: 150000"
               />
             </Form.Item>
+
+            <Row gutter={16}>
+              <Col span={8}>
+                <Form.Item
+                  label="Giá trị tối thiểu"
+                  name="min"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập giá trị tối thiểu!" },
+                    { type: "number", message: "Giá trị phải là số!" },
+                  ]}
+                >
+                  <InputNumber
+                    style={{ width: "100%" }}
+                    placeholder="Ví dụ: 10"
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  label="Giá trị tối đa"
+                  name="max"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập giá trị tối đa!" },
+                    { type: "number", message: "Giá trị phải là số!" },
+                  ]}
+                >
+                  <InputNumber
+                    style={{ width: "100%" }}
+                    placeholder="Ví dụ: 20"
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  label="Đơn vị"
+                  name="unit"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập đơn vị!" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Ví dụ: mg/dL"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
 
             <Form.Item className="mb-0">
               <div className="flex justify-end space-x-2">
@@ -448,6 +547,12 @@ const AdminProvideMedicalTest = () => {
             <Form.Item label="Mô tả" name="description">
               <TextArea rows={4} />
             </Form.Item>
+            <Form.Item label="Mô tả khi kết quả thấp" name="descriptionLow">
+              <TextArea rows={3} />
+            </Form.Item>
+            <Form.Item label="Mô tả khi kết quả cao" name="descriptionHigh">
+              <TextArea rows={3} />
+            </Form.Item>
             <Form.Item label="Giá" name="price">
               <InputNumber
                 style={{ width: "100%" }}
@@ -456,6 +561,23 @@ const AdminProvideMedicalTest = () => {
                 }
               />
             </Form.Item>
+            <Row gutter={16}>
+              <Col span={8}>
+                <Form.Item label="Giá trị tối thiểu" name="min">
+                  <InputNumber style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item label="Giá trị tối đa" name="max">
+                  <InputNumber style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item label="Đơn vị" name="unit">
+                  <Input />
+                </Form.Item>
+              </Col>
+            </Row>
           </Form>
         </Drawer>
       </div>
