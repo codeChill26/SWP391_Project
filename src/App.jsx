@@ -57,6 +57,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/about" element={<About />} />
           <Route path="/payment/callback" element={<PaymentCallback />} />
+          <Route path="/payment-callback" element={<PaymentCallback />} />
           <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
           <Route path="/doctor/appointment" element={<DoctorAppointment />} />
           <Route path="/doctor/appointment/:id" element={<DoctorAppointmentDetail />} />

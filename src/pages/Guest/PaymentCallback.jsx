@@ -7,19 +7,23 @@ import {
   extractPaymentResult 
 } from '../../utils/paymentUtils';
 import { appointmentApi } from '../../api/appointment-api';
-import { Card, Descriptions, Tag, Divider, Typography, Space } from 'antd';
+import { medicalTestApi } from '../../api/medicalTest-api';
+import { Card, Descriptions, Tag, Divider, Typography, Space, Table } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined, DollarOutlined, CalendarOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useUser } from '../../context/UserContext';
 
 const { Title, Text } = Typography;
 
 const PaymentCallback = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { userData } = useUser();
   const [status, setStatus] = useState('processing'); // 'processing', 'success', 'error'
   const [message, setMessage] = useState('Đang xử lý thanh toán...');
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [appointmentDetails, setAppointmentDetails] = useState(null);
+  const [medicalTestDetails, setMedicalTestDetails] = useState(null);
 
   useEffect(() => {
     const handlePaymentCallback = async () => {
@@ -28,35 +32,33 @@ const PaymentCallback = () => {
         const paymentResult = extractPaymentResult(searchParams);
 
         console.log("paymentResult", paymentResult)
+        console.log("URL searchParams:", Object.fromEntries(searchParams.entries()))
         setPaymentDetails(paymentResult);
         
         // Check if payment was successful
         if (isPaymentSuccessful(paymentResult)) {
-          // Get stored appointment data
-          const appointmentData = getAppointmentData(paymentResult.transactionId);
-          console.log("appointmentData", appointmentData)
-          setAppointmentDetails(appointmentData);
-
-          if (!appointmentData) {
-            setStatus('error');
-            setMessage('Không tìm thấy dữ liệu đăng ký. Vui lòng thử lại.');
-            return;
+          // Kiểm tra xem có phải thanh toán medical test không
+          const pendingMedicalTests = localStorage.getItem('pendingMedicalTests');
+          console.log("pendingMedicalTests from localStorage:", pendingMedicalTests);
+          
+          // Kiểm tra xem có phải medical test payment dựa trên orderId
+          const isMedicalTestPayment = paymentResult.transactionId && 
+            paymentResult.transactionId.startsWith('MEDICAL_');
+          
+          if (pendingMedicalTests || isMedicalTestPayment) {
+            // Xử lý thanh toán medical test
+            await handleMedicalTestPayment(paymentResult);
+          } else {
+            // Xử lý thanh toán appointment thông thường
+            await handleAppointmentPayment(paymentResult);
           }
-
-          // Call API to create appointment
-          await appointmentApi.scheduleAppointment(appointmentData);
-          
-          // Clear stored data
-          clearAppointmentData();
-          
-          setStatus('success');
-          setMessage('Thanh toán thành công! Lịch hẹn đã được tạo.');
           
         } else {
           // Payment failed
           const appointmentData = getAppointmentData();
           setAppointmentDetails(appointmentData);
           clearAppointmentData();
+          localStorage.removeItem('pendingMedicalTests');
           setStatus('error');
           setMessage('Thanh toán thất bại. Vui lòng thử lại.');
         }
@@ -66,8 +68,97 @@ const PaymentCallback = () => {
         const appointmentData = getAppointmentData();
         setAppointmentDetails(appointmentData);
         clearAppointmentData();
+        localStorage.removeItem('pendingMedicalTests');
         setStatus('error');
         setMessage('Có lỗi xảy ra. Vui lòng liên hệ hỗ trợ.');
+      }
+    };
+
+    const handleMedicalTestPayment = async (paymentResult) => {
+      try {
+        let pendingData = null;
+        
+        // Thử lấy từ localStorage trước
+        const pendingMedicalTests = localStorage.getItem('pendingMedicalTests');
+        if (pendingMedicalTests) {
+          pendingData = JSON.parse(pendingMedicalTests);
+        } else {
+          // Nếu không có trong localStorage, tạo từ orderId
+          const orderIdParts = paymentResult.transactionId.split('_');
+          if (orderIdParts.length >= 3) {
+            const appointmentId = orderIdParts[1];
+            pendingData = {
+              orderId: paymentResult.transactionId,
+              appointmentId: appointmentId,
+              testIds: [], // Sẽ được lấy từ API
+              totalAmount: parseInt(paymentResult.amount) / 100 // VNPay trả về số tiền nhân 100
+            };
+          }
+        }
+        
+        if (!pendingData) {
+          throw new Error('Không thể xác định thông tin thanh toán medical test');
+        }
+        
+        // Gọi API để cập nhật trạng thái thanh toán cho tất cả medical tests
+        await medicalTestApi.updateMedicalTestPayment(
+          pendingData.appointmentId, 
+          paymentResult.transactionId
+        );
+
+        // Lấy danh sách medical tests để hiển thị số lượng
+        try {
+          const medicalTests = await medicalTestApi.getMedicalTestByAppointmentId(pendingData.appointmentId);
+          pendingData.testIds = medicalTests.map(test => test.id);
+          pendingData.testCount = medicalTests.length;
+          pendingData.medicalTests = medicalTests; // Lưu toàn bộ danh sách để hiển thị bảng
+        } catch (error) {
+          console.warn('Không thể lấy danh sách medical tests:', error);
+          pendingData.testCount = pendingData.testIds.length || 0;
+          pendingData.medicalTests = []; // Mảng rỗng nếu không lấy được
+        }
+        
+        setMedicalTestDetails(pendingData);
+
+        // Xóa dữ liệu pending
+        localStorage.removeItem('pendingMedicalTests');
+        
+        setStatus('success');
+        setMessage('Thanh toán xét nghiệm thành công!');
+        
+      } catch (error) {
+        console.error('Error updating medical test payment status:', error);
+        setStatus('error');
+        setMessage('Thanh toán thành công nhưng có lỗi khi cập nhật trạng thái. Vui lòng liên hệ hỗ trợ.');
+      }
+    };
+
+    const handleAppointmentPayment = async (paymentResult) => {
+      try {
+        // Get stored appointment data
+        const appointmentData = getAppointmentData(paymentResult.transactionId);
+        console.log("appointmentData", appointmentData)
+        setAppointmentDetails(appointmentData);
+
+        if (!appointmentData) {
+          setStatus('error');
+          setMessage('Không tìm thấy dữ liệu đăng ký. Vui lòng thử lại.');
+          return;
+        }
+
+        // Call API to create appointment
+        await appointmentApi.scheduleAppointment(appointmentData);
+        
+        // Clear stored data
+        clearAppointmentData();
+        
+        setStatus('success');
+        setMessage('Thanh toán thành công! Lịch hẹn đã được tạo.');
+        
+      } catch (error) {
+        console.error('Error creating appointment:', error);
+        setStatus('error');
+        setMessage('Thanh toán thành công nhưng có lỗi khi tạo lịch hẹn. Vui lòng liên hệ hỗ trợ.');
       }
     };
 
@@ -214,6 +305,95 @@ const PaymentCallback = () => {
           </Card>
         )}
 
+        {/* Medical Test Details */}
+        {medicalTestDetails && (
+          <Card title="Chi tiết thanh toán xét nghiệm" className="mb-6">
+            <Descriptions bordered column={2}>
+              <Descriptions.Item label="Mã đơn hàng" span={2}>
+                <Tag color="orange">{medicalTestDetails.orderId}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="Số lượng xét nghiệm">
+                <Text strong>{medicalTestDetails.testCount} xét nghiệm</Text>
+              </Descriptions.Item>
+              <Descriptions.Item label="Tổng tiền">
+                <Text strong className="text-lg text-green-600">
+                  {new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND'
+                  }).format(medicalTestDetails.totalAmount)}
+                </Text>
+              </Descriptions.Item>
+              <Descriptions.Item label="Mã cuộc hẹn" span={2}>
+                <Tag color="purple">{medicalTestDetails.appointmentId}</Tag>
+              </Descriptions.Item>
+            </Descriptions>
+            
+            {/* Bảng chi tiết các xét nghiệm */}
+            {medicalTestDetails.medicalTests && medicalTestDetails.medicalTests.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold mb-3">Danh sách xét nghiệm đã thanh toán:</h3>
+                <Table
+                  dataSource={medicalTestDetails.medicalTests.filter(test => test.status === 'paid')}
+                  columns={[
+                    {
+                      title: 'Tên xét nghiệm',
+                      dataIndex: 'testName',
+                      key: 'testName',
+                      render: (text) => <span className="font-medium">{text}</span>
+                    },
+                    {
+                      title: 'Mã đơn hàng',
+                      dataIndex: 'paymentId',
+                      key: 'paymentId',
+                      render: (paymentId) => (
+                        <Tag color="blue" className="font-mono text-xs">
+                          {paymentId || medicalTestDetails.orderId}
+                        </Tag>
+                      )
+                    },
+                    {
+                      title: 'Ngày xét nghiệm',
+                      dataIndex: 'testDate',
+                      key: 'testDate',
+                      render: (date) => new Date(date).toLocaleDateString('vi-VN')
+                    },
+                    {
+                      title: 'Giá',
+                      dataIndex: 'price',
+                      key: 'price',
+                      render: (price) => (
+                        <span className="font-semibold text-green-600">
+                          {new Intl.NumberFormat('vi-VN', {
+                            style: 'currency',
+                            currency: 'VND'
+                          }).format(price)}
+                        </span>
+                      )
+                    },
+                    {
+                      title: 'Trạng thái',
+                      dataIndex: 'status',
+                      key: 'status',
+                      render: (status) => {
+                        const statusConfig = {
+                          'pending': { color: 'orange', text: 'Chờ thanh toán' },
+                          'paid': { color: 'green', text: 'Đã thanh toán' },
+                          'completed': { color: 'blue', text: 'Hoàn thành' }
+                        };
+                        const config = statusConfig[status] || { color: 'default', text: status };
+                        return <Tag color={config.color}>{config.text}</Tag>;
+                      }
+                    }
+                  ]}
+                  pagination={false}
+                  size="small"
+                  className="mt-2"
+                />
+              </div>
+            )}
+          </Card>
+        )}
+
         {/* Appointment Details */}
         {appointmentDetails && (
           <Card title="Chi tiết dịch vụ đã đặt" className="mb-6">
@@ -254,12 +434,35 @@ const PaymentCallback = () => {
           
           {status !== 'processing' && (
             <Space size="large">
-              <button
-                onClick={() => navigate('/patient/appointments')}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Xem lịch hẹn
-              </button>
+              {medicalTestDetails ? (
+                <button
+                  onClick={() => {
+                    // Điều hướng theo role của user
+                    if (userData?.role === 'doctor') {
+                      navigate(`/doctor/appointment/${medicalTestDetails.appointmentId}`);
+                    } else {
+                      navigate(`/patient/appointment/${medicalTestDetails.appointmentId}`);
+                    }
+                  }}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Xem chi tiết cuộc hẹn
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    // Điều hướng theo role của user
+                    if (userData?.role === 'DOCTOR') {
+                      navigate('/doctor/appointments');
+                    } else {
+                      navigate('/patient/appointments');
+                    }
+                  }}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Xem lịch hẹn
+                </button>
+              )}
               <button
                 onClick={() => navigate('/service')}
                 className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium"

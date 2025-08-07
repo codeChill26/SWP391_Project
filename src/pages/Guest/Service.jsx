@@ -101,7 +101,7 @@ const Service = () => {
       // Gọi API để tạo URL thanh toán VNPay
       const amount = selectedService.price; // Số tiền gốc (không nhân 100)
       const orderInfo = `Thanh toan dich vu: ${selectedService.id}`;
-      const callbackUrl = `${window.location.origin}/payment/callback`;
+      const callbackUrl = `${window.location.origin}/payment-callback`;
       
       console.log('Calling VNPay API with:', {
         vnpayId: transactionId,

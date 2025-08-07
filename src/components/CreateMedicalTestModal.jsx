@@ -188,23 +188,6 @@ const CreateMedicalTestModal = ({ visible, onOk, onCancel, appointmentId }) => {
         </Form.Item>
 
         <Form.Item
-          label="Kết quả"
-          name="result"
-          rules={[{ required: true, message: "Vui lòng nhập kết quả" }]}
-        >
-          <Input 
-            placeholder={selectedTestName ? getResultPlaceholder(selectedTestName) : "Nhập kết quả xét nghiệm..."}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Ghi chú"
-          name="notes"
-        >
-          <Input.TextArea rows={3} placeholder="Ghi chú bổ sung..." />
-        </Form.Item>
-
-        <Form.Item
           label="Giá (VNĐ)"
           name="price"
           rules={[{ required: true, message: "Vui lòng nhập giá" }]}

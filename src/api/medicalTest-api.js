@@ -63,5 +63,50 @@ export const medicalTestApi = {
       throw error;
     }
   },
-
+  updateMedicalTest: async (id, medicalTestData) => {
+    try {
+      const token = localStorage.getItem("token")
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+      const response = await axios.put(`${BASE_URL}/${id}`, medicalTestData, config);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating medical test:', error);
+      throw error;
+    }
+  },
+  deleteMedicalTest: async (id) => {
+    try {
+      const token = localStorage.getItem("token")
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+      const response = await axios.delete(`${BASE_URL}/${id}`, config);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting medical test:', error);
+      throw error;
+    }
+  },
+  // Cập nhật trạng thái thanh toán cho tất cả medical tests của một appointment
+  updateMedicalTestPayment: async (appointmentId, paymentId) => {
+    try {
+      const token = localStorage.getItem("token")
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+      const response = await axios.get(`${BASE_URL}/payment?appointmentId=${appointmentId}&paymentId=${paymentId}`, config);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating medical test payment status:', error);
+      throw error;
+    }
+  }
 }
